@@ -161,7 +161,15 @@
 21. Нажмите кнопку **Добавить еще одну модель оборудования**, откроется окно создания модели.
 22. Заполните поля этими данными:
     * _название_ – `VT065 S07 F05/07 14 P5021 LLT НЗ`;
-    * _изображение_ – загрузите файл. Для тестовой модели используйте этот {% file src="https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link" name="изображение.png" %}  [файл][2];
+    * _изображение_ – загрузите файл. Для тестовой модели используйте этот 
+{% file src="https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link" name="изображение.png" %}  
+{% file src="data:text/plain;base64,Cg==" name="внешний вид.png" %}
+{% file src="data:text/plain;base64,Cg==" name="изображение.png" %}
+{% file src="data:text/plain;base64,Cg==https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link" name="изображение.png" %}
+{% file src="[data:text/plain;base64,Cg==](https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link)" name="изображение.png" %}
+{% file src="data:text/plain;base64,Cg==" name="empty.txt" %}
+
+    [файл][2];
     * _описание_ – добавьте описание `Привод пневматический четвертьоборотный, одностороннего действия. Присоединительный фланец F05/07 по ISO 5211, квадрат штока 14 мм. Климатическое исполнение УХЛ1 (-60°С...+80°С). Рабочий диапазон давления управляющего воздуха 3-8 бар.`;
     * _производитель_ – нажмите кнопку **Выбрать**, чтобы выбрать созданного производителя;
     * _группа_ – должна быть уже выбрана, так как мы перешли к созданию модели через подраздел **Группы**;
