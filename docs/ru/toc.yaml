@@ -14,7 +14,6 @@ items:
   - name: Быстрый старт
     labeled: true
     href: quick_start.md
-items: 
   - name: Раздел «Организация»
     items:
       - name: О разделе
@@ -27,7 +26,6 @@ items:
         href: company/department.md
       - name: Должности
         href: company/positions.md      
-items:
   - name: Раздел «Оборудование»
     items:    
       - name: О разделе
@@ -42,7 +40,6 @@ items:
         href: equipment/dynamic_parameters.md
       - name: Производители
         href: equipment/manufacturers.md
-  items:
   - name: Раздел «Техническая поддержка»
     items:
       - name: О разделе
