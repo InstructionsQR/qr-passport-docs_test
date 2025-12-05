@@ -15,6 +15,7 @@ items:
     labeled: true
     href: quick_start.md
   - name: Раздел «Организация»
+    expand: true
     items:
       - name: О разделе
         href: company/about_company.md 
@@ -27,6 +28,7 @@ items:
       - name: Должности
         href: company/positions.md      
   - name: Раздел «Оборудование»
+    expand: true
     items:    
       - name: О разделе
         href: equipment/about_equipment.md  
@@ -41,6 +43,7 @@ items:
       - name: Производители
         href: equipment/manufacturers.md
   - name: Раздел «Техническая поддержка»
+    expand: true
     items:
       - name: О разделе
         href: support/about_support.md  
