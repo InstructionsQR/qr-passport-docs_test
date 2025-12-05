@@ -15,16 +15,19 @@ items:
     href: quick_start.md
     
   - name: Раздел «Организация»
+    expanded: true
     include:
       path: company/toc.yaml
       mode: link   
       
   - name: Раздел «Оборудование»
+    expanded: true
     include:
       path: equipment/toc.yaml
       mode: link  
       
   - name: Раздел «Техническая поддержка»
+    expanded: true
     include:
       path: support/toc.yaml
       mode: link
