@@ -163,17 +163,17 @@
     * _название_ – `VT065 S07 F05/07 14 P5021 LLT НЗ`;
     * _изображение_ – загрузите файл. Для тестовой модели используйте этот
 
-{% file src="https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link" name="изображение.png" %}  
+    {% file src="https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link" name="изображение.png" %}  
 
-{% file src="data:text/plain;base64,Cg==" name="внешний вид.png" %}
+    {% file src="data:text/plain;base64,Cg==" name="внешний вид.png" %}
 
-{% file src="data:text/plain;base64,Cg==" name="изображение.png" %}
+    {% file src="data:text/plain;base64,Cg==" name="изображение.png" %}
 
-{% file src="data:text/plain;base64,Cg==https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link" name="изображение.png" %}
+    {% file src="data:text/plain;base64,Cg==https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link" name="изображение.png" %}
 
-{% file src="[data:text/plain;base64,Cg==](https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link)" name="изображение.png" %}
+    {% file src="[data:text/plain;base64,Cg==](https://drive.google.com/file/d/1xh0eA0VrihKidtuXI3gAO0bzgLKrW8QQ/view?usp=drive_link)" name="Внешний вид.png" %}
 
-{% file src="data:text/plain;base64,Cg==" name="empty.txt" %}
+    {% file src="data:text/plain;base64,Cg==" name="empty.txt" %}
 
     [файл][2];
     
