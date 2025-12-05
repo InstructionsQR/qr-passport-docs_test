@@ -9,44 +9,51 @@ navigation:
       icon: "https://cdn.prod.website-files.com/6603d96aba3ded64d735fd75/6608f2be8d8302eabf161fdb_logo.svg"
 items: 
   - name: Начало работы
-    href: docs/ru/about.md    
+    labeled: true
+    href: about.md    
   - name: Быстрый старт
-    href: docs/ru/quick_start.md 
+    labeled: true
+    href: quick_start.md
+items: 
   - name: Раздел «Организация»
     items:
       - name: О разделе
-        href: docs/ru/company/about_company.md 
+        href: company/about_company.md 
       - name: Общая информация
-        href: docs/ru/company/company.md
+        href: company/company.md
       - name: Пользователи
-        href: docs/ru/company/users.md
+        href: company/users.md
       - name: Департаменты
-        href: docs/ru/company/department.md
+        href: company/department.md
       - name: Должности
-        href: docs/ru/company/positions.md      
+        href: company/positions.md      
+items:
   - name: Раздел «Оборудование»
-    items:
+    items:    
       - name: О разделе
-        href: docs/ru/equipment/about_equipment.md  
+        href: equipment/about_equipment.md  
       - name: Группы
-        href: docs/ru/equipment/equipment.md
+        href: equipment/equipment.md
       - name: Модели оборудования
-        href: docs/ru/equipment/models.md
+        href: equipment/models.md
       - name: Зарегистрированные изделия
-        href: docs/ru/equipment/registered_products.md
+        href: equipment/registered_products.md
       - name: Динамические параметры
-        href: docs/ru/equipment/dynamic_parameters.md
+        href: equipment/dynamic_parameters.md
       - name: Производители
-        href: docs/ru/equipment/manufacturers.md
+        href: equipment/manufacturers.md
+  items:
   - name: Раздел «Техническая поддержка»
     items:
       - name: О разделе
-        href: docs/ru/support/about_support.md  
+        href: support/about_support.md  
       - name: Тикеты
-        href: docs/ru/support/support.md
+        href: support/support.md
       - name: Категории тикетов
-        href: docs/ru/support/ticket_categories.md
+        href: support/ticket_categories.md
   - name: История изменений
-    href: docs/ru/updates.md
+    labeled: true
+    href: updates.md
   - name: Часто задаваемые вопросы
+    labeled: true
     href: FAQ.md
