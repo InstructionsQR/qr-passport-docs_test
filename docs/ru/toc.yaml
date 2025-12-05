@@ -9,31 +9,47 @@ navigation:
       icon: "https://cdn.prod.website-files.com/6603d96aba3ded64d735fd75/6608f2be8d8302eabf161fdb_logo.svg"
 items: 
   - name: Начало работы
-    href: about.md
-    
+    href: about.md    
   - name: Быстрый старт
-    href: quick_start.md
-    
+    href: quick_start.md 
   - name: Раздел «Организация»
-    expanded: true
-    include:
-      path: company/toc.yaml
-      mode: link   
-      
+    labeled: true
+    items:
+      - name: О разделе
+        href: company/about_company.md 
+      - name: Общая информация
+        href: company/company.md
+      - name: Пользователи
+        href: company/users.md
+      - name: Департаменты
+        href: company/department.md
+      - name: Должности
+        href: company/positions.md      
   - name: Раздел «Оборудование»
-    expanded: true
-    include:
-      path: equipment/toc.yaml
-      mode: link  
-      
+    labeled: true
+    items:
+      - name: О разделе
+        href: equipment/about_equipment.md  
+      - name: Группы
+        href: equipment/equipment.md
+      - name: Модели оборудования
+        href: equipment/models.md
+      - name: Зарегистрированные изделия
+        href: equipment/registered_products.md
+      - name: Динамические параметры
+        href: equipment/dynamic_parameters.md
+      - name: Производители
+        href: equipment/manufacturers.md
   - name: Раздел «Техническая поддержка»
-    expanded: true
-    include:
-      path: support/toc.yaml
-      mode: link
-      
+    labeled: true
+    items:
+      - name: О разделе
+        href: support/about_support.md  
+      - name: Тикеты
+        href: support/support.md
+      - name: Категории тикетов
+        href: support/ticket_categories.md
   - name: История изменений
     href: updates.md
-    
   - name: Часто задаваемые вопросы
     href: FAQ.md
