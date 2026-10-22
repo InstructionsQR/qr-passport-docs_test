@@ -627,6 +627,24 @@ document.addEventListener('click', function (e) {
     }
   }
 
-  if (document.readyState === 'complete') buildUI();
-  else window.addEventListener('load', buildUI);
+  // Ждём появления виджета поддержки (он создаётся динамически)
+  function tryBuildUI(attempt) {
+    if (attempt > 20) {
+      // Если виджет так и не появился — вставляем кнопку просто в конец body
+      buildUI();
+      return;
+    }
+    var widget = document.querySelector('.support-widget');
+    if (widget) {
+      buildUI();
+    } else {
+      setTimeout(function() { tryBuildUI(attempt + 1); }, 300);
+    }
+  }
+
+  if (document.readyState === 'complete') {
+    tryBuildUI(0);
+  } else {
+    window.addEventListener('load', function() { tryBuildUI(0); });
+  }
 })();
