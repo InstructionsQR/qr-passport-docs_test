@@ -627,24 +627,40 @@ document.addEventListener('click', function (e) {
     }
   }
 
-  // Ждём появления виджета поддержки (он создаётся динамически)
-  function tryBuildUI(attempt) {
-    if (attempt > 20) {
-      // Если виджет так и не появился — вставляем кнопку просто в конец body
-      buildUI();
-      return;
-    }
+  // Используем MutationObserver для отслеживания появления виджета
+  function observeAndBuild() {
     var widget = document.querySelector('.support-widget');
     if (widget) {
       buildUI();
-    } else {
-      setTimeout(function() { tryBuildUI(attempt + 1); }, 300);
+      return;
     }
+
+    // Виджет ещё не появился — следим за изменениями DOM
+    var observer = new MutationObserver(function(mutations) {
+      var widget = document.querySelector('.support-widget');
+      if (widget) {
+        buildUI();
+        observer.disconnect(); // Прекращаем наблюдение
+      }
+    });
+
+    observer.observe(document.body, {
+      childList: true,
+      subtree: true
+    });
+
+    // Таймаут на случай, если виджет так и не появится (через 10 секунд)
+    setTimeout(function() {
+      observer.disconnect();
+      if (!document.querySelector('.ai-search-btn')) {
+        buildUI();
+      }
+    }, 10000);
   }
 
   if (document.readyState === 'complete') {
-    tryBuildUI(0);
+    observeAndBuild();
   } else {
-    window.addEventListener('load', function() { tryBuildUI(0); });
+    window.addEventListener('load', observeAndBuild);
   }
 })();
