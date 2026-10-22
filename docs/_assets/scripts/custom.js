@@ -502,3 +502,131 @@ document.addEventListener('click', function (e) {
     console.log('Метрика: цель messenger_click отправлена, мессенджер: ' + messenger);
   }
 }, true);
+
+
+// ===== Умный локальный поиск по документации =====
+(function () {
+  var INDEX = [
+    { title: 'Начало работы', keywords: ['начало', 'старт', 'знакомство', 'структура', 'новичок', 'введение', 'первый раз', 'с чего начать'], desc: 'Как устроена документация QR-Passport, с чего начать знакомство с системой.', url: '/ru/about.html' },
+    { title: 'Основные понятия', keywords: ['понятия', 'термины', 'определения', 'марка', 'сертификат', 'деталь', 'модель', 'шаблон', 'изделие', 'что такое'], desc: 'Марка материала, сертификат, деталь, модель, шаблон паспорта, изделие – ключевые термины системы.', url: '/ru/concepts.html' },
+    { title: 'Практическое руководство', keywords: ['практика', 'руководство', 'инструкция', 'пошагово', 'арматура', 'трубопровод', 'выпуск', 'passport', 'qr-код', 'как сделать', 'как создать'], desc: 'Пошаговая инструкция по выпуску паспорта трубопроводной арматуры.', url: '/ru/quick_start.html' },
+    { title: 'Быстрый старт (другое оборудование)', keywords: ['быстрый', 'пневмопривод', 'электропривод', 'другое', 'упрощенный', 'без сертификатов'], desc: 'Выпуск паспорта пневмопривода, электропривода и другого оборудования.', url: '/ru/quick_start_other.html' },
+    { title: 'Марки материалов', keywords: ['марка', 'материал', 'химический', 'состав', 'механический', 'свойства', 'сталь', 'сплав'], desc: 'Создание марки материала с химическим составом и механическими свойствами.', url: '/ru/equipment/material_grades/about.html' },
+    { title: 'Сертификаты', keywords: ['сертификат', 'партия', 'плавка', 'качество', 'подтверждение', 'измерения', 'свойства'], desc: 'Добавление сертификата с партией или плавкой материала.', url: '/ru/equipment/certificates/about.html' },
+    { title: 'Детали', keywords: ['деталь', 'составная', 'часть', 'изделие', 'связь', 'марка'], desc: 'Создание детали – составной части изделия.', url: '/ru/equipment/details/about.html' },
+    { title: 'Создание модели', keywords: ['модель', 'группа', 'однотипные', 'изделия', 'создать', 'форму', 'шаблон'], desc: 'Описание группы однотипных изделий, форма создания модели.', url: '/ru/equipment/models/create_model.html' },
+    { title: 'Шаблоны паспорта', keywords: ['шаблон', 'настройка', 'поля', 'разделы', 'блоки', 'структура', 'passport'], desc: 'Настройка шаблона: обязательные поля, разделы, включение и отключение блоков.', url: '/ru/equipment/models/templates.html' },
+    { title: 'AI-помощник', keywords: ['ai', 'ии', 'помощник', 'распознавание', 'автоматическое', 'заполнение', 'умный', 'ocr'], desc: 'Распознавание данных из готового технического паспорта и автоматическое заполнение.', url: '/ru/equipment/models/templates.html#ai' },
+    { title: 'Регистрация изделия', keywords: ['регистрация', 'изделие', 'выпуск', 'qr-код', 'код', 'продукция', 'цифровой'], desc: 'Выпуск паспорта изделия и генерация QR-кода.', url: '/ru/equipment/registered_products/about.html' },
+    { title: 'Биллинг', keywords: ['биллинг', 'тариф', 'баланс', 'оплата', 'пополнение', 'счет', 'акт', 'деньги', 'цена'], desc: 'Тарифные планы, баланс, пополнение счёта, закрывающие документы.', url: '/ru/billing.html' },
+    { title: 'Часто задаваемые вопросы', keywords: ['faq', 'вопросы', 'ответы', 'помощь', 'справка', 'часто'], desc: 'Ответы на типовые вопросы.', url: '/ru/FAQ.html' },
+    { title: 'Типовые ошибки', keywords: ['ошибки', 'troubleshooting', 'проблемы', 'не работает', 'решение', 'исправление'], desc: 'Решения частых проблем при работе с системой.', url: '/ru/troubleshooting.html' }
+  ];
+
+  var SYNONYMS = {
+    'паспорт': ['паспорт', 'документ', 'certificate'],
+    'создать': ['создать', 'сделать', 'добавить', 'завести', 'выпустить', 'оформить'],
+    'модель': ['модель', 'группа', 'тип'],
+    'материал': ['материал', 'сырье', 'сплав', 'сталь'],
+    'качество': ['качество', 'сертификат', 'подтверждение', 'партия'],
+    'qr': ['qr', 'код', 'qr-код', 'qrкод'],
+    'ошибка': ['ошибка', 'проблема', 'не работает', 'сбой', 'troubleshooting'],
+    'цена': ['цена', 'стоимость', 'тариф', 'оплата', 'биллинг', 'деньги']
+  };
+
+  function normalize(text) {
+    return text.toLowerCase().replace(/ё/g, 'е').replace(/[^\wа-яё\s]/gi, ' ').trim();
+  }
+
+  function expandQuery(query) {
+    var words = normalize(query).split(/\s+/).filter(function(w) { return w.length >= 2; });
+    var expanded = [];
+    words.forEach(function(w) {
+      expanded.push(w);
+      Object.keys(SYNONYMS).forEach(function(key) {
+        if (SYNONYMS[key].indexOf(w) !== -1) {
+          SYNONYMS[key].forEach(function(s) {
+            if (expanded.indexOf(s) === -1) expanded.push(s);
+          });
+        }
+      });
+    });
+    return expanded;
+  }
+
+  function search(query) {
+    var terms = expandQuery(query);
+    var scored = INDEX.map(function(item) {
+      var score = 0;
+      var text = normalize(item.title + ' ' + item.keywords.join(' ') + ' ' + item.desc);
+      terms.forEach(function(term) {
+        if (normalize(item.title).indexOf(term) !== -1) score += 10;
+        if (item.keywords.indexOf(term) !== -1) score += 5;
+        if (text.indexOf(term) !== -1) score += 2;
+        if (term.length >= 3 && text.indexOf(term.slice(0, 3)) !== -1) score += 1;
+      });
+      return { item: item, score: score };
+    });
+    scored.sort(function(a, b) { return b.score - a.score; });
+    return scored.filter(function(r) { return r.score > 0; }).slice(0, 5);
+  }
+
+  function buildUI() {
+    var btn = document.createElement('button');
+    btn.className = 'ai-search-btn';
+    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Умный поиск';
+    btn.title = 'Поиск по документации с учётом синонимов';
+    
+    var widget = document.querySelector('.support-widget');
+    if (widget) widget.before(btn);
+    else document.body.appendChild(btn);
+
+    var overlay = document.createElement('div');
+    overlay.className = 'ai-search-overlay';
+    overlay.innerHTML =
+      '<div class="ai-search-modal">' +
+      '  <div class="ai-search-header"><h3>Поиск по документации</h3><button class="ai-search-close">✕</button></div>' +
+      '  <div class="ai-search-hint">Введите вопрос – поиск найдёт разделы по смыслу и синонимам.</div>' +
+      '  <input type="text" class="ai-search-input" placeholder="Например: как создать паспорт?" autofocus>' +
+      '  <div class="ai-search-status" id="aiSearchStatus">Готов к работе</div>' +
+      '  <div class="ai-search-results" id="aiSearchResults"></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    btn.addEventListener('click', function() { overlay.classList.add('open'); overlay.querySelector('input').focus(); });
+    overlay.querySelector('.ai-search-close').addEventListener('click', function() { overlay.classList.remove('open'); });
+    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.remove('open'); });
+
+    var input = overlay.querySelector('input');
+    var status = overlay.querySelector('#aiSearchStatus');
+    var results = overlay.querySelector('#aiSearchResults');
+    var timer = null;
+
+    input.addEventListener('input', function() {
+      var q = input.value.trim();
+      if (q.length < 2) { results.innerHTML = ''; status.textContent = 'Готов к работе'; return; }
+      clearTimeout(timer);
+      timer = setTimeout(function() { runSearch(q); }, 300);
+    });
+
+    function runSearch(q) {
+      var top = search(q);
+      if (top.length === 0) {
+        status.textContent = 'Ничего не найдено. Попробуйте другие слова.';
+        results.innerHTML = '';
+        return;
+      }
+      status.textContent = 'Найдено ' + top.length + ' разделов:';
+      results.innerHTML = top.map(function(r) {
+        return '<a class="ai-search-item" href="' + r.item.url + '">' +
+          '<div class="ai-search-title">' + r.item.title + '</div>' +
+          '<div class="ai-search-desc">' + r.item.desc + '</div>' +
+          '<div class="ai-search-score">релевантность ' + r.score + '</div>' +
+          '</a>';
+      }).join('');
+    }
+  }
+
+  if (document.readyState === 'complete') buildUI();
+  else window.addEventListener('load', buildUI);
+})();

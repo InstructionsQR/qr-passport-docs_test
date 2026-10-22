@@ -587,3 +587,44 @@ img[src*="products_qr_phone"] {
   background: rgba(255, 255, 255, 0.06) !important;
   border-color: #7b86ff;
 }
+
+
+/* ===== Умный поиск ===== */
+.ai-search-btn {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 8px 14px; border: 1px solid #cdcffd; border-radius: 12px;
+  background: transparent; color: #5460d4; font-size: 14px; cursor: pointer;
+  margin-right: 8px; font-family: inherit;
+}
+.ai-search-btn:hover { background: rgba(84, 96, 212, 0.08); border-color: #5460d4; }
+
+.ai-search-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.4);
+  display: none; align-items: flex-start; justify-content: center;
+  padding-top: 10vh; z-index: 10000;
+}
+.ai-search-overlay.open { display: flex; }
+
+.ai-search-modal {
+  background: #fff; border-radius: 16px; width: 640px; max-width: 92vw;
+  max-height: 70vh; overflow-y: auto; padding: 20px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.2); font-family: inherit;
+}
+.ai-search-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
+.ai-search-header h3 { margin: 0; font-size: 18px; color: #333; }
+.ai-search-close { background: none; border: none; font-size: 20px; cursor: pointer; color: #666; }
+.ai-search-hint { color: #6b7280; font-size: 13px; margin-bottom: 12px; }
+.ai-search-input {
+  width: 100%; padding: 12px 14px; border: 1px solid #e6e7eb; border-radius: 12px;
+  font-size: 15px; box-sizing: border-box; font-family: inherit;
+}
+.ai-search-input:focus { outline: none; border-color: #5460d4; }
+.ai-search-status { color: #6b7280; font-size: 12px; margin: 8px 0; min-height: 16px; }
+.ai-search-item {
+  display: block; padding: 12px; border: 1px solid #e6e7eb; border-radius: 10px;
+  margin-bottom: 8px; text-decoration: none; color: inherit;
+}
+.ai-search-item:hover { border-color: #5460d4; background: rgba(84, 96, 212, 0.04); }
+.ai-search-title { font-weight: 600; color: #5460d4; margin-bottom: 4px; }
+.ai-search-desc { font-size: 13px; color: #374151; }
+.ai-search-score { font-size: 11px; color: #9ca3af; margin-top: 4px; }
