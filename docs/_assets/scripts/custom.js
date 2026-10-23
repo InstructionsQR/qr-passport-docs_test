@@ -572,14 +572,12 @@ document.addEventListener('click', function (e) {
   }
 
   function buildUI() {
+    if (document.querySelector('.ai-search-btn')) return;
+
     var btn = document.createElement('button');
     btn.className = 'ai-search-btn';
     btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Умный поиск';
     btn.title = 'Поиск по документации с учётом синонимов';
-    
-    var widget = document.querySelector('.support-widget');
-    if (widget) widget.before(btn);
-    else document.body.appendChild(btn);
 
     var overlay = document.createElement('div');
     overlay.className = 'ai-search-overlay';
@@ -625,42 +623,44 @@ document.addEventListener('click', function (e) {
           '</a>';
       }).join('');
     }
+
+    document.body.appendChild(btn);
+    btn.style.position = 'fixed';
+    btn.style.bottom = '90px';
+    btn.style.right = '20px';
+    btn.style.zIndex = '9999';
+    btn.style.margin = '0';
   }
 
-  // Используем MutationObserver для отслеживания появления виджета
-  function observeAndBuild() {
+  var attempts = 0;
+  var maxAttempts = 30;
+
+  function tryInsertButton() {
+    attempts++;
     var widget = document.querySelector('.support-widget');
+    
     if (widget) {
       buildUI();
+      var btn = document.querySelector('.ai-search-btn');
+      if (btn) {
+        widget.before(btn);
+        btn.style.position = '';
+        btn.style.bottom = '';
+        btn.style.right = '';
+      }
       return;
     }
-
-    // Виджет ещё не появился — следим за изменениями DOM
-    var observer = new MutationObserver(function(mutations) {
-      var widget = document.querySelector('.support-widget');
-      if (widget) {
-        buildUI();
-        observer.disconnect(); // Прекращаем наблюдение
-      }
-    });
-
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true
-    });
-
-    // Таймаут на случай, если виджет так и не появится (через 10 секунд)
-    setTimeout(function() {
-      observer.disconnect();
-      if (!document.querySelector('.ai-search-btn')) {
-        buildUI();
-      }
-    }, 10000);
+    
+    if (attempts < maxAttempts) {
+      setTimeout(tryInsertButton, 500);
+    } else {
+      buildUI();
+    }
   }
 
   if (document.readyState === 'complete') {
-    observeAndBuild();
+    tryInsertButton();
   } else {
-    window.addEventListener('load', observeAndBuild);
+    window.addEventListener('load', tryInsertButton);
   }
 })();
