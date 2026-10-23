@@ -656,3 +656,9 @@ img[src*="products_qr_phone"] {
     display: none !important;
   }
 }
+
+/* Страховка: кнопка всегда видима в панели */
+.dc-controls .ai-search-btn {
+  opacity: 1 !important;
+  visibility: visible !important;
+}

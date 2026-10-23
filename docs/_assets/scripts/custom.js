@@ -671,12 +671,27 @@ document.addEventListener('click', function (e) {
     btn.classList.toggle('ai-search-vertical', vertical);
   }
 
-  ensureButton();
+  // Наблюдатель за панелью; переподключается, если панель пересоздаётся
+  var currentPanel = null;
+  var observer = null;
+
+  function attachObserver() {
+    var panel = document.querySelector('.dc-controls');
+    if (panel && panel !== currentPanel) {
+      currentPanel = panel;
+      if (observer) observer.disconnect();
+      observer = new MutationObserver(function () {
+        ensureButton();
+      });
+      observer.observe(panel, { childList: true, subtree: true });
+    }
+    ensureButton();
+  }
+
+  attachObserver();
   window.addEventListener('resize', ensureButton);
 
-  var observer = new MutationObserver(function () {
-    ensureButton();
-  });
-  var panel = document.querySelector('.dc-controls') || document.body;
-  observer.observe(panel, { childList: true, subtree: true });
+  // Страховка: раз в секунду проверяем, что кнопка на месте,
+  // даже если движок документации стёр её при перерисовке панели
+  setInterval(attachObserver, 1000);
 })();
