@@ -539,13 +539,13 @@ document.addEventListener('click', function (e) {
   }
 
   function expandQuery(query) {
-    var words = normalize(query).split(/\s+/).filter(function(w) { return w.length >= 2; });
+    var words = normalize(query).split(/\s+/).filter(function (w) { return w.length >= 2; });
     var expanded = [];
-    words.forEach(function(w) {
+    words.forEach(function (w) {
       expanded.push(w);
-      Object.keys(SYNONYMS).forEach(function(key) {
+      Object.keys(SYNONYMS).forEach(function (key) {
         if (SYNONYMS[key].indexOf(w) !== -1) {
-          SYNONYMS[key].forEach(function(s) {
+          SYNONYMS[key].forEach(function (s) {
             if (expanded.indexOf(s) === -1) expanded.push(s);
           });
         }
@@ -556,10 +556,10 @@ document.addEventListener('click', function (e) {
 
   function search(query) {
     var terms = expandQuery(query);
-    var scored = INDEX.map(function(item) {
+    var scored = INDEX.map(function (item) {
       var score = 0;
       var text = normalize(item.title + ' ' + item.keywords.join(' ') + ' ' + item.desc);
-      terms.forEach(function(term) {
+      terms.forEach(function (term) {
         if (normalize(item.title).indexOf(term) !== -1) score += 10;
         if (item.keywords.indexOf(term) !== -1) score += 5;
         if (text.indexOf(term) !== -1) score += 2;
@@ -567,104 +567,116 @@ document.addEventListener('click', function (e) {
       });
       return { item: item, score: score };
     });
-    scored.sort(function(a, b) { return b.score - a.score; });
-    return scored.filter(function(r) { return r.score > 0; }).slice(0, 5);
+    scored.sort(function (a, b) { return b.score - a.score; });
+    return scored.filter(function (r) { return r.score > 0; }).slice(0, 5);
   }
 
-  function buildUI() {
-    if (document.querySelector('.ai-search-btn')) return;
-
-    var btn = document.createElement('button');
-    btn.className = 'ai-search-btn';
-    btn.innerHTML = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg> Умный поиск';
-    btn.title = 'Поиск по документации с учётом синонимов';
+  // === Модальное окно поиска ===
+  var overlayBuilt = false;
+  function ensureOverlay() {
+    if (overlayBuilt) return;
+    overlayBuilt = true;
 
     var overlay = document.createElement('div');
     overlay.className = 'ai-search-overlay';
     overlay.innerHTML =
       '<div class="ai-search-modal">' +
-      '  <div class="ai-search-header"><h3>Поиск по документации</h3><button class="ai-search-close">✕</button></div>' +
+      '  <div class="ai-search-header"><h3>Поиск по документации</h3><button class="ai-search-close" type="button">✕</button></div>' +
       '  <div class="ai-search-hint">Введите вопрос – поиск найдёт разделы по смыслу и синонимам.</div>' +
-      '  <input type="text" class="ai-search-input" placeholder="Например: как создать паспорт?" autofocus>' +
-      '  <div class="ai-search-status" id="aiSearchStatus">Готов к работе</div>' +
-      '  <div class="ai-search-results" id="aiSearchResults"></div>' +
+      '  <input type="text" class="ai-search-input" placeholder="Например: как создать паспорт?">' +
+      '  <div class="ai-search-status">Готов к работе</div>' +
+      '  <div class="ai-search-results"></div>' +
       '</div>';
     document.body.appendChild(overlay);
 
-    btn.addEventListener('click', function() { overlay.classList.add('open'); overlay.querySelector('input').focus(); });
-    overlay.querySelector('.ai-search-close').addEventListener('click', function() { overlay.classList.remove('open'); });
-    overlay.addEventListener('click', function(e) { if (e.target === overlay) overlay.classList.remove('open'); });
-
     var input = overlay.querySelector('input');
-    var status = overlay.querySelector('#aiSearchStatus');
-    var results = overlay.querySelector('#aiSearchResults');
+    var status = overlay.querySelector('.ai-search-status');
+    var results = overlay.querySelector('.ai-search-results');
     var timer = null;
 
-    input.addEventListener('input', function() {
-      var q = input.value.trim();
-      if (q.length < 2) { results.innerHTML = ''; status.textContent = 'Готов к работе'; return; }
-      clearTimeout(timer);
-      timer = setTimeout(function() { runSearch(q); }, 300);
+    overlay.querySelector('.ai-search-close').addEventListener('click', function () {
+      overlay.classList.remove('open');
+    });
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') overlay.classList.remove('open');
     });
 
-    function runSearch(q) {
-      var top = search(q);
-      if (top.length === 0) {
-        status.textContent = 'Ничего не найдено. Попробуйте другие слова.';
+    input.addEventListener('input', function () {
+      var q = input.value.trim();
+      if (q.length < 2) {
         results.innerHTML = '';
+        status.textContent = 'Готов к работе';
         return;
       }
-      status.textContent = 'Найдено ' + top.length + ' разделов:';
-      results.innerHTML = top.map(function(r) {
-        return '<a class="ai-search-item" href="' + r.item.url + '">' +
-          '<div class="ai-search-title">' + r.item.title + '</div>' +
-          '<div class="ai-search-desc">' + r.item.desc + '</div>' +
-          '<div class="ai-search-score">релевантность ' + r.score + '</div>' +
-          '</a>';
-      }).join('');
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        var top = search(q);
+        if (top.length === 0) {
+          status.textContent = 'Ничего не найдено. Попробуйте другие слова.';
+          results.innerHTML = '';
+          return;
+        }
+        status.textContent = 'Найдено ' + top.length + ' разделов:';
+        results.innerHTML = top.map(function (r) {
+          return '<a class="ai-search-item" href="' + r.item.url + '">' +
+            '<div class="ai-search-title">' + r.item.title + '</div>' +
+            '<div class="ai-search-desc">' + r.item.desc + '</div>' +
+            '<div class="ai-search-score">релевантность ' + r.score + '</div>' +
+            '</a>';
+        }).join('');
+      }, 300);
+    });
+
+    window._aiSearchOverlay = overlay;
+  }
+
+  function openSearch() {
+    ensureOverlay();
+    window._aiSearchOverlay.classList.add('open');
+    setTimeout(function () {
+      window._aiSearchOverlay.querySelector('input').focus();
+    }, 50);
+  }
+
+  // === Кнопка в панели управления ===
+  function makeButton() {
+    var isEn = window.location.pathname.indexOf('/en/') !== -1;
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'g-button g-button_view_flat-secondary g-button_size_m g-button_pin_round-round dc-control dc-controls__control ai-search-btn';
+    b.setAttribute('data-tooltip', isEn ? 'Smart search' : 'Умный поиск');
+    b.setAttribute('aria-label', isEn ? 'Smart search' : 'Умный поиск');
+    b.innerHTML =
+      '<span class="g-button__icon"><span class="g-button__icon-inner">' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="11" cy="11" r="7"></circle>' +
+      '<path d="m21 21-4.3-4.3"></path>' +
+      '</svg></span></span>';
+    b.addEventListener('click', openSearch);
+    return b;
+  }
+
+  function ensureButton() {
+    var host = document.querySelector('.dc-controls');
+    if (!host) return;
+    var btn = host.querySelector('.ai-search-btn');
+    if (!btn) {
+      btn = makeButton();
+      host.appendChild(btn);
     }
-
-    // Ищем панель иконок (fullscreen, настройки, язык, скачать PDF)
-    var pdfBtn = document.querySelector('[title*="PDF"]') ||
-                 document.querySelector('[aria-label*="PDF"]') ||
-                 document.querySelector('[title*="pdf"]');
-    var controls = pdfBtn ? pdfBtn.parentElement :
-                   (document.querySelector('.dc-controls') ||
-                    document.querySelector('[class*="controls"]'));
-
-    if (controls) {
-      // Вставляем кнопку в конец ряда иконок (после «Скачать PDF»)
-      controls.appendChild(btn);
-      btn.style.position = 'static';
-      btn.style.top = '';
-      btn.style.right = '';
-      btn.style.zIndex = '';
-      btn.style.display = 'inline-flex';
-      btn.style.alignItems = 'center';
-      btn.style.marginLeft = '8px';
-      btn.style.padding = '4px 10px';
-      btn.style.fontSize = '12px';
-    } else {
-      // Fallback: фиксированная позиция под хэдером справа
-      document.body.appendChild(btn);
-      btn.style.position = 'fixed';
-      btn.style.top = '100px';
-      btn.style.right = '24px';
-      btn.style.zIndex = '9999';
-      btn.style.margin = '0';
-    }
+    var vertical = window.getComputedStyle(host).flexDirection === 'column';
+    btn.classList.toggle('ai-search-vertical', vertical);
   }
 
-  // Создаём кнопку сразу после загрузки страницы
-  if (document.readyState === 'complete') {
-    buildUI();
-  } else {
-    window.addEventListener('load', buildUI);
-  }
+  ensureButton();
+  window.addEventListener('resize', ensureButton);
 
-  if (document.readyState === 'complete') {
-    tryInsertButton();
-  } else {
-    window.addEventListener('load', tryInsertButton);
-  }
+  var observer = new MutationObserver(function () {
+    ensureButton();
+  });
+  var panel = document.querySelector('.dc-controls') || document.body;
+  observer.observe(panel, { childList: true, subtree: true });
 })();
