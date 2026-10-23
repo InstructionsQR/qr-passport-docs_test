@@ -662,3 +662,10 @@ img[src*="products_qr_phone"] {
   opacity: 1 !important;
   visibility: visible !important;
 }
+
+/* Принудительно показываем кнопку умного поиска в панели */
+.dc-controls .ai-search-btn.ai-search-btn {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+}
