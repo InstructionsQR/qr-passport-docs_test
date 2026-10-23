@@ -591,12 +591,23 @@ img[src*="products_qr_phone"] {
 
 /* ===== Умный поиск ===== */
 .ai-search-btn {
-  display: inline-flex; align-items: center; gap: 6px;
-  padding: 8px 14px; border: 1px solid #cdcffd; border-radius: 12px;
-  background: transparent; color: #5460d4; font-size: 14px; cursor: pointer;
-  margin-right: 8px; font-family: inherit;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border: 1px solid #cdcffd;
+  border-radius: 8px;
+  background: transparent;
+  color: #5460d4;
+  font-size: 13px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.2s;
 }
-.ai-search-btn:hover { background: rgba(84, 96, 212, 0.08); border-color: #5460d4; }
+.ai-search-btn:hover {
+  background: rgba(84, 96, 212, 0.08);
+  border-color: #5460d4;
+}
 
 .ai-search-overlay {
   position: fixed; inset: 0; background: rgba(0,0,0,0.4);

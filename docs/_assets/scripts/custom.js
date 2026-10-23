@@ -624,12 +624,41 @@ document.addEventListener('click', function (e) {
       }).join('');
     }
 
-    document.body.appendChild(btn);
-    btn.style.position = 'fixed';
-    btn.style.bottom = '90px';
-    btn.style.right = '20px';
-    btn.style.zIndex = '9999';
-    btn.style.margin = '0';
+    // Ищем хэдер и вставляем кнопку рядом с иконкой поиска
+    var header = document.querySelector('.dc-header') ||
+                 document.querySelector('.g-header') ||
+                 document.querySelector('header') ||
+                 document.querySelector('.dc-root__header');
+    
+    if (header) {
+      // Ищем контейнер с иконками (поиск, меню)
+      var searchIcon = header.querySelector('.dc-header__search') ||
+                       header.querySelector('[class*="search"]') ||
+                       header.querySelector('svg');
+      
+      if (searchIcon) {
+        // Вставляем кнопку перед иконкой поиска
+        searchIcon.parentElement.insertBefore(btn, searchIcon);
+      } else {
+        // Если иконку не нашли — вставляем в конец хэдера
+        header.appendChild(btn);
+      }
+      
+      // Стили для кнопки в хэдере
+      btn.style.position = 'static';
+      btn.style.bottom = '';
+      btn.style.right = '';
+      btn.style.zIndex = '';
+      btn.style.margin = '0 8px';
+      btn.style.verticalAlign = 'middle';
+    } else {
+      // Fallback: если хэдер не найден — вставляем в body с фиксированной позицией
+      document.body.appendChild(btn);
+      btn.style.position = 'fixed';
+      btn.style.bottom = '90px';
+      btn.style.right = '20px';
+      btn.style.zIndex = '9999';
+    }
   }
 
   var attempts = 0;
@@ -637,17 +666,12 @@ document.addEventListener('click', function (e) {
 
   function tryInsertButton() {
     attempts++;
-    var widget = document.querySelector('.support-widget');
+    var header = document.querySelector('.dc-header') ||
+                 document.querySelector('.g-header') ||
+                 document.querySelector('header');
     
-    if (widget) {
+    if (header) {
       buildUI();
-      var btn = document.querySelector('.ai-search-btn');
-      if (btn) {
-        widget.before(btn);
-        btn.style.position = '';
-        btn.style.bottom = '';
-        btn.style.right = '';
-      }
       return;
     }
     
