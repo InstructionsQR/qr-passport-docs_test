@@ -624,13 +624,35 @@ document.addEventListener('click', function (e) {
       }).join('');
     }
 
-    // Фиксируем кнопку в правом верхнем углу, слева от поля поиска
-    document.body.appendChild(btn);
-    btn.style.position = 'fixed';
-    btn.style.top = '12px';
-    btn.style.right = '280px'; // Слева от поля поиска (которое ~260px шириной)
-    btn.style.zIndex = '9999';
-    btn.style.margin = '0';
+    // Ищем панель иконок (fullscreen, настройки, язык, скачать PDF)
+    var pdfBtn = document.querySelector('[title*="PDF"]') ||
+                 document.querySelector('[aria-label*="PDF"]') ||
+                 document.querySelector('[title*="pdf"]');
+    var controls = pdfBtn ? pdfBtn.parentElement :
+                   (document.querySelector('.dc-controls') ||
+                    document.querySelector('[class*="controls"]'));
+
+    if (controls) {
+      // Вставляем кнопку в конец ряда иконок (после «Скачать PDF»)
+      controls.appendChild(btn);
+      btn.style.position = 'static';
+      btn.style.top = '';
+      btn.style.right = '';
+      btn.style.zIndex = '';
+      btn.style.display = 'inline-flex';
+      btn.style.alignItems = 'center';
+      btn.style.marginLeft = '8px';
+      btn.style.padding = '4px 10px';
+      btn.style.fontSize = '12px';
+    } else {
+      // Fallback: фиксированная позиция под хэдером справа
+      document.body.appendChild(btn);
+      btn.style.position = 'fixed';
+      btn.style.top = '100px';
+      btn.style.right = '24px';
+      btn.style.zIndex = '9999';
+      btn.style.margin = '0';
+    }
   }
 
   // Создаём кнопку сразу после загрузки страницы
