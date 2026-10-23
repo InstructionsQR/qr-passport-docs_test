@@ -691,7 +691,12 @@ document.addEventListener('click', function (e) {
   attachObserver();
   window.addEventListener('resize', ensureButton);
 
-  // Страховка: раз в секунду проверяем, что кнопка на месте,
-  // даже если движок документации стёр её при перерисовке панели
+  // Ловим момент появления панели в DOM – вставляем кнопку мгновенно
+  var bootObserver = new MutationObserver(function () {
+    attachObserver();
+  });
+  bootObserver.observe(document.documentElement, { childList: true, subtree: true });
+
+  // Страховка: раз в секунду проверяем, что кнопка на месте
   setInterval(attachObserver, 1000);
 })();
