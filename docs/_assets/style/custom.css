@@ -797,9 +797,42 @@ img[src*="products_qr_phone"] {
   display: none;
 }
 
-/* ===== Меню выбора поиска ===== */
+/* ===== Своя кнопка поиска в хедере ===== */
+.ai-header-search-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.ai-header-search-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid #e6e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+}
+
+.ai-header-search-btn:hover {
+  border-color: #5460d4;
+  background: rgba(84, 96, 212, 0.04);
+}
+
+.ai-header-search-btn svg {
+  color: #6b7280;
+}
+
+/* Меню выбора */
 .ai-search-choice-menu {
   position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
   background: #fff;
   border: 1px solid #e6e7eb;
   border-radius: 12px;
@@ -807,6 +840,7 @@ img[src*="products_qr_phone"] {
   padding: 8px;
   z-index: 10001;
   display: none;
+  min-width: 200px;
   font-family: inherit;
 }
 
@@ -834,6 +868,18 @@ img[src*="products_qr_phone"] {
   font-size: 16px;
   width: 20px;
   text-align: center;
+}
+
+/* Тёмная тема */
+.g-root_theme_dark .ai-header-search-btn {
+  background: #2b3145;
+  border-color: #4a5580;
+  color: #f4f5fd;
+}
+
+.g-root_theme_dark .ai-header-search-btn:hover {
+  background: rgba(165, 184, 255, 0.08);
+  border-color: #a5b8ff;
 }
 
 .g-root_theme_dark .ai-search-choice-menu {
