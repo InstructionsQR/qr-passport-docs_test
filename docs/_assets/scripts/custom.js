@@ -2,15 +2,9 @@
   function makeButton() {
     var isEn = window.location.pathname.indexOf('/en/') !== -1;
 
-    // Создаём поле ввода для умного поиска в хедере
+    // Поле умного поиска для хедера
     var wrapper = document.createElement('div');
     wrapper.className = 'ai-search-header-wrapper';
-
-    var input = document.createElement('input');
-    input.type = 'text';
-    input.className = 'ai-search-header-input';
-    input.placeholder = isEn ? 'Smart search...' : 'Умный поиск...';
-    input.setAttribute('aria-label', isEn ? 'Smart search' : 'Умный поиск');
 
     var icon = document.createElement('span');
     icon.className = 'ai-search-header-icon';
@@ -20,15 +14,21 @@
       '<path d="m21 21-4.3-4.3"></path>' +
       '</svg>';
 
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'ai-search-header-input';
+    input.placeholder = isEn ? 'Smart search...' : 'Умный поиск...';
+    input.setAttribute('aria-label', isEn ? 'Smart search' : 'Умный поиск');
+    input.readOnly = true; // делаем поле неактивным для ввода – клик откроет модалку
+
     wrapper.appendChild(icon);
     wrapper.appendChild(input);
 
     // Клик по полю – открываем модалку умного поиска
-    input.addEventListener('focus', function () {
+    wrapper.addEventListener('click', function () {
       if (typeof openSearch === 'function') {
         openSearch();
       }
-      input.blur();
     });
 
     return wrapper;
@@ -38,18 +38,15 @@
     var host = document.querySelector('.dc-controls');
     if (!host) return;
 
-    // 1. Умный поиск в хедере (на месте обычного поиска)
-    var searchContainer = document.querySelector('.dc-search-input__input, .Suggest__input');
-    if (searchContainer && !searchContainer.querySelector('.ai-search-header-wrapper')) {
-      var oldInput = searchContainer.querySelector('input.g-text-input__control');
-      if (oldInput) {
-        oldInput.style.display = 'none'; // скрываем обычное поле
-      }
+    // 1. Добавляем поле умного поиска в хедер (если ещё не добавлено)
+    var searchContainer = document.querySelector('.dc-search-input__input, .Suggest__input, [class*="search-input"]');
+    if (searchContainer && !document.querySelector('.ai-search-header-wrapper')) {
       var smartSearch = makeButton();
+      searchContainer.style.position = 'relative';
       searchContainer.appendChild(smartSearch);
     }
 
-    // 2. Обычный поиск под лупу в панели управления
+    // 2. Кнопка обычного поиска в панели управления (под лупу)
     var btn = host.querySelector('.ai-search-btn');
     if (!btn) {
       btn = document.createElement('button');
@@ -64,17 +61,12 @@
         '<path d="m21 21-4.3-4.3"></path>' +
         '</svg></span></span>';
 
-      // Клик по лупе – показываем обычное поле поиска
+      // Клик по лупе – фокус на обычное поле поиска
       btn.addEventListener('click', function () {
-        var searchContainer = document.querySelector('.dc-search-input__input, .Suggest__input');
-        if (searchContainer) {
-          var oldInput = searchContainer.querySelector('input.g-text-input__control');
-          var smartWrapper = searchContainer.querySelector('.ai-search-header-wrapper');
-          if (oldInput && smartWrapper) {
-            oldInput.style.display = '';
-            smartWrapper.style.display = 'none';
-            oldInput.focus();
-          }
+        var regularInput = document.querySelector('input.g-text-input__control, input#dc-1-input');
+        if (regularInput) {
+          regularInput.focus();
+          regularInput.click();
         }
       });
 

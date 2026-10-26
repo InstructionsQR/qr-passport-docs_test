@@ -799,11 +799,15 @@ img[src*="products_qr_phone"] {
 
 /* ===== Умный поиск в хедере ===== */
 .ai-search-header-wrapper {
-  position: relative;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
   display: flex;
   align-items: center;
-  width: 100%;
-  max-width: 260px;
+  cursor: pointer;
+  z-index: 10;
 }
 
 .ai-search-header-icon {
@@ -824,11 +828,7 @@ img[src*="products_qr_phone"] {
   background: #fff;
   cursor: pointer;
   font-family: inherit;
-}
-
-.ai-search-header-input:focus {
-  outline: none;
-  border-color: #5460d4;
+  pointer-events: none; /* клики проходят сквозь поле на wrapper */
 }
 
 .ai-search-header-input::placeholder {
@@ -844,4 +844,20 @@ img[src*="products_qr_phone"] {
 
 .g-root_theme_dark .ai-search-header-icon {
   color: #a5b8ff;
+}
+
+/* Скрываем обычное поле поиска (оно остаётся в DOM, но невидимо) */
+.dc-search-input__input input.g-text-input__control,
+.Suggest__input input.g-text-input__control {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Показываем обычное поле при фокусе */
+.dc-search-input__input input.g-text-input__control:focus,
+.Suggest__input input.g-text-input__control:focus {
+  opacity: 1 !important;
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 20;
 }
