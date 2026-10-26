@@ -765,6 +765,109 @@ document.addEventListener('click', function (e) {
 
   // Страховка: раз в секунду проверяем, что кнопка на месте
   setInterval(attachObserver, 1000);
+
+  // === Своя кнопка поиска в хедере ===
+  function ai_createSearchButton() {
+    // Находим контейнер, где было поле поиска
+    var searchContainer = document.querySelector('.dc-search-input__input, .Suggest__input, [class*="search"]');
+    if (!searchContainer || searchContainer.querySelector('.ai-search-btn-custom')) return;
+
+    // Создаём кнопку
+    var btn = document.createElement('button');
+    btn.className = 'ai-search-btn-custom';
+    btn.type = 'button';
+    btn.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">' +
+      '<circle cx="11" cy="11" r="7"></circle>' +
+      '<path d="m21 21-4.3-4.3"></path>' +
+      '</svg>' +
+      '<span>Поиск</span>';
+
+    // Создаём меню выбора
+    var menu = document.createElement('div');
+    menu.className = 'ai-search-choice-menu';
+    menu.innerHTML =
+      '<div class="ai-search-choice-item" data-type="smart">' +
+      '  <span class="ai-search-choice-icon">✨</span>' +
+      '  <span>Умный поиск</span>' +
+      '</div>' +
+      '<div class="ai-search-choice-item" data-type="regular">' +
+      '  <span class="ai-search-choice-icon">🔍</span>' +
+      '  <span>Обычный поиск</span>' +
+      '</div>';
+
+    // Контейнер
+    var wrapper = document.createElement('div');
+    wrapper.className = 'ai-search-wrapper-custom';
+    wrapper.appendChild(btn);
+    wrapper.appendChild(menu);
+
+    // Вставляем в место, где было поле поиска
+    if (searchContainer) {
+      searchContainer.style.display = ''; // показываем контейнер
+      searchContainer.innerHTML = ''; // очищаем от старого input
+      searchContainer.appendChild(wrapper);
+      searchContainer.classList.add('ai-search-container');
+    }
+
+    // Позиционируем меню
+    function positionMenu() {
+      var rect = btn.getBoundingClientRect();
+      menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+      menu.style.left = (rect.left + window.scrollX) + 'px';
+      menu.style.minWidth = rect.width + 'px';
+    }
+
+    // Клик по кнопке – показываем меню
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      menu.classList.toggle('open');
+      if (menu.classList.contains('open')) {
+        positionMenu();
+      }
+    });
+
+    // Выбор пункта
+    menu.addEventListener('click', function (e) {
+      var item = e.target.closest('.ai-search-choice-item');
+      if (!item) return;
+      
+      var type = item.dataset.type;
+      menu.classList.remove('open');
+
+      if (type === 'smart') {
+        // Умный поиск
+        if (typeof openSearch === 'function') openSearch();
+      } else if (type === 'regular') {
+        // Обычный поиск – показываем скрытое поле
+        var oldInput = document.querySelector('input.g-text-input__control, input#dc-1-input');
+        if (oldInput) {
+          oldInput.style.display = '';
+          oldInput.focus();
+        }
+      }
+    });
+
+    // Закрытие по клику вне
+    document.addEventListener('click', function (e) {
+      if (!wrapper.contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
+
+    // Закрытие по Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') menu.classList.remove('open');
+    });
+  }
+
+  // Запускаем
+  if (document.readyState === 'complete') {
+    ai_createSearchButton();
+  } else {
+    window.addEventListener('load', ai_createSearchButton);
+  }
+  setTimeout(ai_createSearchButton, 1000);  
 })();
 
 
