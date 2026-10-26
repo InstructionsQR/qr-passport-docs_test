@@ -1,91 +1,30 @@
 (function () {
   function makeButton() {
-    // Эта функция больше не создаёт кнопку в панели – возвращаем пустой элемент
-    var dummy = document.createElement('span');
-    dummy.style.display = 'none';
-    return dummy;
+    var isEn = window.location.pathname.indexOf('/en/') !== -1;
+    var a = document.createElement('a');
+    a.className = 'g-button g-button_view_flat-secondary g-button_size_m g-button_pin_round-round dc-control dc-controls__control pdf-dl-btn';
+    a.href = isEn ? '/en/single-page.pdf' : '/ru/single-page.pdf';
+    a.setAttribute('download', isEn ? 'User guide QR-Passport.pdf' : 'Инструкция пользователя QR-Passport.pdf');
+    a.setAttribute('data-tooltip', isEn ? 'Download PDF' : 'Скачать PDF');
+    a.setAttribute('aria-label', isEn ? 'Download PDF' : 'Скачать PDF');
+    a.innerHTML =
+      '<span class="g-button__icon"><span class="g-button__icon-inner">' +
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>' +
+      '</span></span>';
+    return a;
   }
 
   function ensureButton() {
     var host = document.querySelector('.dc-controls');
     if (!host) return;
-
-    // Скрываем кнопку умного поиска в панели управления (лупу)
-    var btn = host.querySelector('.ai-search-btn');
-    if (btn) {
-      btn.style.display = 'none';
+    var btn = host.querySelector('.pdf-dl-btn');
+    if (!btn) {
+      btn = makeButton();
+      host.appendChild(btn);
     }
-
-    // Добавляем обработчик на поле поиска в хедере (если ещё не добавлен)
-    var searchInput = document.querySelector('input.g-text-input__control, input#dc-1-input');
-    if (searchInput && !searchInput.dataset.aiSearchHooked) {
-      searchInput.dataset.aiSearchHooked = 'true';
-
-      // Создаём всплывающее меню выбора
-      var menu = document.createElement('div');
-      menu.className = 'ai-search-choice-menu';
-      menu.innerHTML =
-        '<div class="ai-search-choice-item" data-type="smart">' +
-        '  <span class="ai-search-choice-icon">✨</span>' +
-        '  <span>Умный поиск</span>' +
-        '</div>' +
-        '<div class="ai-search-choice-item" data-type="regular">' +
-        '  <span class="ai-search-choice-icon">🔍</span>' +
-        '  <span>Обычный поиск</span>' +
-        '</div>';
-      document.body.appendChild(menu);
-
-      // Позиционируем меню под полем поиска
-      function positionMenu() {
-        var rect = searchInput.getBoundingClientRect();
-        menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-        menu.style.left = (rect.left + window.scrollX) + 'px';
-        menu.style.width = rect.width + 'px';
-      }
-
-      // Клик по полю поиска – показываем меню
-      searchInput.addEventListener('focus', function (e) {
-        e.preventDefault();
-        e.stopPropagation();
-        searchInput.blur(); // убираем фокус с поля
-        positionMenu();
-        menu.classList.add('open');
-      });
-
-      // Клик по пункту меню
-      menu.addEventListener('click', function (e) {
-        var item = e.target.closest('.ai-search-choice-item');
-        if (!item) return;
-
-        var type = item.dataset.type;
-        menu.classList.remove('open');
-
-        if (type === 'smart') {
-          // Открываем модалку умного поиска
-          if (typeof openSearch === 'function') {
-            openSearch();
-          }
-        } else if (type === 'regular') {
-          // Фокус на обычное поле поиска
-          searchInput.focus();
-          searchInput.click();
-        }
-      });
-
-      // Закрытие меню при клике вне его
-      document.addEventListener('click', function (e) {
-        if (!menu.contains(e.target) && e.target !== searchInput) {
-          menu.classList.remove('open');
-        }
-      });
-
-      // Закрытие по Escape
-      document.addEventListener('keydown', function (e) {
-        if (e.key === 'Escape') {
-          menu.classList.remove('open');
-        }
-      });
-    }
+    // вертикальная панель или горизонтальная – подставляем нужный отступ
+    var vertical = window.getComputedStyle(host).flexDirection === 'column';
+    btn.classList.toggle('pdf-vertical', vertical);
   }
 
   ensureButton();
@@ -768,64 +707,89 @@ document.addEventListener('click', function (e) {
     sendGoal('smart_search_open');
   }
 
-  // === Кнопка в панели управления ===
-  function makeButton() {
-    var isEn = window.location.pathname.indexOf('/en/') !== -1;
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'g-button g-button_view_flat-secondary g-button_size_m g-button_pin_round-round dc-control dc-controls__control ai-search-btn';
-    b.setAttribute('data-tooltip', isEn ? 'Smart search' : 'Умный поиск');
-    b.setAttribute('aria-label', isEn ? 'Smart search' : 'Умный поиск');
-    b.innerHTML =
-      '<span class="g-button__icon"><span class="g-button__icon-inner">' +
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<circle cx="11" cy="11" r="7"></circle>' +
-      '<path d="m21 21-4.3-4.3"></path>' +
-      '</svg></span></span>';
-    b.addEventListener('click', openSearch);
-    return b;
+  // === Меню выбора поиска при клике на поле в хедере ===
+  function ai_makeChoiceHook() {
+    var searchInput = document.querySelector('input.g-text-input__control, input#dc-1-input');
+    if (!searchInput || searchInput.dataset.aiSearchHooked) return;
+    searchInput.dataset.aiSearchHooked = 'true';
+
+    // Всплывающее меню выбора
+    var menu = document.createElement('div');
+    menu.className = 'ai-search-choice-menu';
+    menu.innerHTML =
+      '<div class="ai-search-choice-item" data-type="smart">' +
+      '  <span class="ai-search-choice-icon">✨</span>' +
+      '  <span>Умный поиск</span>' +
+      '</div>' +
+      '<div class="ai-search-choice-item" data-type="regular">' +
+      '  <span class="ai-search-choice-icon">🔍</span>' +
+      '  <span>Обычный поиск</span>' +
+      '</div>';
+    document.body.appendChild(menu);
+
+    function positionMenu() {
+      var rect = searchInput.getBoundingClientRect();
+      menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+      menu.style.left = (rect.left + window.scrollX) + 'px';
+      menu.style.width = Math.max(rect.width, 220) + 'px';
+    }
+
+    // Клик по полю – показываем меню вместо обычного фокуса
+    searchInput.addEventListener('mousedown', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      positionMenu();
+      menu.classList.add('open');
+    }, true);
+
+    // Выбор пункта меню
+    menu.addEventListener('click', function (e) {
+      var item = e.target.closest('.ai-search-choice-item');
+      if (!item) return;
+      var type = item.dataset.type;
+      menu.classList.remove('open');
+
+      if (type === 'smart') {
+        if (typeof openSearch === 'function') openSearch();
+      } else if (type === 'regular') {
+        // Снимаем перехват, даём полю сфокусироваться как обычно
+        searchInput.dataset.aiSearchHooked = '';
+        searchInput.focus();
+        searchInput.click();
+        // Возвращаем перехват через секунду
+        setTimeout(function () {
+          searchInput.dataset.aiSearchHooked = 'true';
+        }, 1000);
+      }
+    });
+
+    // Закрытие по клику вне меню
+    document.addEventListener('click', function (e) {
+      if (!menu.contains(e.target) && e.target !== searchInput) {
+        menu.classList.remove('open');
+      }
+    });
+
+    // Закрытие по Escape
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') menu.classList.remove('open');
+    });
   }
 
-  function ensureButton() {
+  function ai_ensureChoiceHook() {
+    // Скрываем кнопку-лупу умного поиска в панели управления (если она есть)
     var host = document.querySelector('.dc-controls');
-    if (!host) return;
-    var btn = host.querySelector('.ai-search-btn');
-    if (!btn) {
-      btn = makeButton();
-      host.appendChild(btn);
+    if (host) {
+      var aiBtn = host.querySelector('.ai-search-btn');
+      if (aiBtn) aiBtn.style.display = 'none';
     }
-    var vertical = window.getComputedStyle(host).flexDirection === 'column';
-    btn.classList.toggle('ai-search-vertical', vertical);
+    ai_makeChoiceHook();
   }
 
-  // Наблюдатель за панелью; переподключается, если панель пересоздаётся
-  var currentPanel = null;
-  var observer = null;
-
-  function attachObserver() {
-    var panel = document.querySelector('.dc-controls');
-    if (panel && panel !== currentPanel) {
-      currentPanel = panel;
-      if (observer) observer.disconnect();
-      observer = new MutationObserver(function () {
-        ensureButton();
-      });
-      observer.observe(panel, { childList: true, subtree: true });
-    }
-    ensureButton();
-  }
-
-  attachObserver();
-  window.addEventListener('resize', ensureButton);
-
-  // Ловим момент появления панели в DOM – вставляем кнопку мгновенно
-  var bootObserver = new MutationObserver(function () {
-    attachObserver();
-  });
-  bootObserver.observe(document.documentElement, { childList: true, subtree: true });
-
-  // Страховка: раз в секунду проверяем, что кнопка на месте
-  setInterval(attachObserver, 1000);
+  // Запускаем хук выбора поиска
+  ai_ensureChoiceHook();
+  window.addEventListener('load', ai_ensureChoiceHook);
+  setInterval(ai_ensureChoiceHook, 1000);
 })();
 
 
