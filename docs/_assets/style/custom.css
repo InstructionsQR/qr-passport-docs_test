@@ -797,100 +797,11 @@ img[src*="products_qr_phone"] {
   display: none;
 }
 
-/* ===== Своя кнопка поиска в хедере ===== */
-.ai-header-search-wrapper {
-  position: relative;
-  display: inline-block;
-}
-
-.ai-header-search-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
-  border: 1px solid #e6e7eb;
-  border-radius: 8px;
-  background: #fff;
-  color: #374151;
-  font-size: 14px;
-  cursor: pointer;
-  font-family: inherit;
-  transition: all 0.15s;
-}
-
-.ai-header-search-btn:hover {
-  border-color: #5460d4;
-  background: rgba(84, 96, 212, 0.04);
-}
-
-.ai-header-search-btn svg {
-  color: #6b7280;
-}
-
-/* Меню выбора */
-.ai-search-choice-menu {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 8px;
-  background: #fff;
-  border: 1px solid #e6e7eb;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  padding: 8px;
-  z-index: 10001;
-  display: none;
-  min-width: 200px;
-  font-family: inherit;
-}
-
-.ai-search-choice-menu.open {
-  display: block;
-}
-
-.ai-search-choice-item {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #374151;
-  transition: background 0.15s;
-}
-
-.ai-search-choice-item:hover {
-  background: rgba(84, 96, 212, 0.08);
-}
-
-.ai-search-choice-icon {
-  font-size: 16px;
-  width: 20px;
-  text-align: center;
-}
-
-/* Тёмная тема */
-.g-root_theme_dark .ai-header-search-btn {
-  background: #2b3145;
-  border-color: #4a5580;
-  color: #f4f5fd;
-}
-
-.g-root_theme_dark .ai-header-search-btn:hover {
-  background: rgba(165, 184, 255, 0.08);
-  border-color: #a5b8ff;
-}
-
-.g-root_theme_dark .ai-search-choice-menu {
-  background: #2b3145;
-  border-color: #4a5580;
-}
-
-.g-root_theme_dark .ai-search-choice-item {
-  color: #f4f5fd;
-}
-
-.g-root_theme_dark .ai-search-choice-item:hover {
-  background: rgba(165, 184, 255, 0.12);
+/* Скрываем стандартное поле поиска в хедере */
+.dc-search-input__input,
+.Suggest__input,
+[class*="search-input"],
+input.g-text-input__control,
+input#dc-1-input {
+  display: none !important;
 }
