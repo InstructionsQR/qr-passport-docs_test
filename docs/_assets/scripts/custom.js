@@ -1,30 +1,91 @@
 (function () {
   function makeButton() {
-    var isEn = window.location.pathname.indexOf('/en/') !== -1;
-    var a = document.createElement('a');
-    a.className = 'g-button g-button_view_flat-secondary g-button_size_m g-button_pin_round-round dc-control dc-controls__control pdf-dl-btn';
-    a.href = isEn ? '/en/single-page.pdf' : '/ru/single-page.pdf';
-    a.setAttribute('download', isEn ? 'User guide QR-Passport.pdf' : 'Инструкция пользователя QR-Passport.pdf');
-    a.setAttribute('data-tooltip', isEn ? 'Download PDF' : 'Скачать PDF');
-    a.setAttribute('aria-label', isEn ? 'Download PDF' : 'Скачать PDF');
-    a.innerHTML =
-      '<span class="g-button__icon"><span class="g-button__icon-inner">' +
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>' +
-      '</span></span>';
-    return a;
+    // Эта функция больше не создаёт кнопку в панели – возвращаем пустой элемент
+    var dummy = document.createElement('span');
+    dummy.style.display = 'none';
+    return dummy;
   }
 
   function ensureButton() {
     var host = document.querySelector('.dc-controls');
     if (!host) return;
-    var btn = host.querySelector('.pdf-dl-btn');
-    if (!btn) {
-      btn = makeButton();
-      host.appendChild(btn);
+
+    // Скрываем кнопку умного поиска в панели управления (лупу)
+    var btn = host.querySelector('.ai-search-btn');
+    if (btn) {
+      btn.style.display = 'none';
     }
-    // вертикальная панель или горизонтальная – подставляем нужный отступ
-    var vertical = window.getComputedStyle(host).flexDirection === 'column';
-    btn.classList.toggle('pdf-vertical', vertical);
+
+    // Добавляем обработчик на поле поиска в хедере (если ещё не добавлен)
+    var searchInput = document.querySelector('input.g-text-input__control, input#dc-1-input');
+    if (searchInput && !searchInput.dataset.aiSearchHooked) {
+      searchInput.dataset.aiSearchHooked = 'true';
+
+      // Создаём всплывающее меню выбора
+      var menu = document.createElement('div');
+      menu.className = 'ai-search-choice-menu';
+      menu.innerHTML =
+        '<div class="ai-search-choice-item" data-type="smart">' +
+        '  <span class="ai-search-choice-icon">✨</span>' +
+        '  <span>Умный поиск</span>' +
+        '</div>' +
+        '<div class="ai-search-choice-item" data-type="regular">' +
+        '  <span class="ai-search-choice-icon">🔍</span>' +
+        '  <span>Обычный поиск</span>' +
+        '</div>';
+      document.body.appendChild(menu);
+
+      // Позиционируем меню под полем поиска
+      function positionMenu() {
+        var rect = searchInput.getBoundingClientRect();
+        menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
+        menu.style.left = (rect.left + window.scrollX) + 'px';
+        menu.style.width = rect.width + 'px';
+      }
+
+      // Клик по полю поиска – показываем меню
+      searchInput.addEventListener('focus', function (e) {
+        e.preventDefault();
+        e.stopPropagation();
+        searchInput.blur(); // убираем фокус с поля
+        positionMenu();
+        menu.classList.add('open');
+      });
+
+      // Клик по пункту меню
+      menu.addEventListener('click', function (e) {
+        var item = e.target.closest('.ai-search-choice-item');
+        if (!item) return;
+
+        var type = item.dataset.type;
+        menu.classList.remove('open');
+
+        if (type === 'smart') {
+          // Открываем модалку умного поиска
+          if (typeof openSearch === 'function') {
+            openSearch();
+          }
+        } else if (type === 'regular') {
+          // Фокус на обычное поле поиска
+          searchInput.focus();
+          searchInput.click();
+        }
+      });
+
+      // Закрытие меню при клике вне его
+      document.addEventListener('click', function (e) {
+        if (!menu.contains(e.target) && e.target !== searchInput) {
+          menu.classList.remove('open');
+        }
+      });
+
+      // Закрытие по Escape
+      document.addEventListener('keydown', function (e) {
+        if (e.key === 'Escape') {
+          menu.classList.remove('open');
+        }
+      });
+    }
   }
 
   ensureButton();

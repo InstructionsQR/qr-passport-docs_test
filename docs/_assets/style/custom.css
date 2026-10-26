@@ -796,3 +796,57 @@ img[src*="products_qr_phone"] {
 .dc-header-block h1 {
   display: none;
 }
+
+
+/* ===== Всплывающее меню выбора поиска ===== */
+.ai-search-choice-menu {
+  position: absolute;
+  background: #fff;
+  border: 1px solid #e6e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 10001;
+  display: none;
+  font-family: inherit;
+}
+
+.ai-search-choice-menu.open {
+  display: block;
+}
+
+.ai-search-choice-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  transition: background 0.15s;
+}
+
+.ai-search-choice-item:hover {
+  background: rgba(84, 96, 212, 0.08);
+}
+
+.ai-search-choice-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Тёмная тема */
+.g-root_theme_dark .ai-search-choice-menu {
+  background: #2b3145;
+  border-color: #4a5580;
+}
+
+.g-root_theme_dark .ai-search-choice-item {
+  color: #f4f5fd;
+}
+
+.g-root_theme_dark .ai-search-choice-item:hover {
+  background: rgba(165, 184, 255, 0.12);
+}
