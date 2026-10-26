@@ -1,30 +1,82 @@
 (function () {
   function makeButton() {
     var isEn = window.location.pathname.indexOf('/en/') !== -1;
-    var a = document.createElement('a');
-    a.className = 'g-button g-button_view_flat-secondary g-button_size_m g-button_pin_round-round dc-control dc-controls__control pdf-dl-btn';
-    a.href = isEn ? '/en/single-page.pdf' : '/ru/single-page.pdf';
-    a.setAttribute('download', isEn ? 'User guide QR-Passport.pdf' : 'Инструкция пользователя QR-Passport.pdf');
-    a.setAttribute('data-tooltip', isEn ? 'Download PDF' : 'Скачать PDF');
-    a.setAttribute('aria-label', isEn ? 'Download PDF' : 'Скачать PDF');
-    a.innerHTML =
-      '<span class="g-button__icon"><span class="g-button__icon-inner">' +
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12"></path><path d="m7 10 5 5 5-5"></path><path d="M5 21h14"></path></svg>' +
-      '</span></span>';
-    return a;
+
+    // Создаём поле ввода для умного поиска в хедере
+    var wrapper = document.createElement('div');
+    wrapper.className = 'ai-search-header-wrapper';
+
+    var input = document.createElement('input');
+    input.type = 'text';
+    input.className = 'ai-search-header-input';
+    input.placeholder = isEn ? 'Smart search...' : 'Умный поиск...';
+    input.setAttribute('aria-label', isEn ? 'Smart search' : 'Умный поиск');
+
+    var icon = document.createElement('span');
+    icon.className = 'ai-search-header-icon';
+    icon.innerHTML =
+      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+      '<circle cx="11" cy="11" r="7"></circle>' +
+      '<path d="m21 21-4.3-4.3"></path>' +
+      '</svg>';
+
+    wrapper.appendChild(icon);
+    wrapper.appendChild(input);
+
+    // Клик по полю – открываем модалку умного поиска
+    input.addEventListener('focus', function () {
+      openSearch();
+      input.blur(); // убираем фокус с поля, фокус перейдёт в модалку
+    });
+
+    return wrapper;
   }
 
   function ensureButton() {
     var host = document.querySelector('.dc-controls');
     if (!host) return;
-    var btn = host.querySelector('.pdf-dl-btn');
+
+    // Умный поиск в хедере
+    var headerSearch = document.querySelector('.dc-header__search, [class*="header"] [class*="search"]');
+    if (headerSearch && !headerSearch.querySelector('.ai-search-header-wrapper')) {
+      var smartSearch = makeButton();
+      // Заменяем обычное поле поиска на умный поиск
+      var oldInput = headerSearch.querySelector('input');
+      if (oldInput) {
+        oldInput.style.display = 'none'; // скрываем обычное поле
+      }
+      headerSearch.appendChild(smartSearch);
+    }
+
+    // Обычный поиск под лупу в панели управления
+    var btn = host.querySelector('.ai-search-btn');
     if (!btn) {
-      btn = makeButton();
+      btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'g-button g-button_view_flat-secondary g-button_size_m g-button_pin_round-round dc-control dc-controls__control ai-search-btn';
+      btn.setAttribute('data-tooltip', 'Поиск');
+      btn.setAttribute('aria-label', 'Поиск');
+      btn.innerHTML =
+        '<span class="g-button__icon"><span class="g-button__icon-inner">' +
+        '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
+        '<circle cx="11" cy="11" r="7"></circle>' +
+        '<path d="m21 21-4.3-4.3"></path>' +
+        '</svg></span></span>';
+
+      // Клик по лупе – открываем обычный поиск
+      btn.addEventListener('click', function () {
+        var searchInput = document.querySelector('.dc-header__search input, [class*="header"] [class*="search"] input');
+        if (searchInput) {
+          searchInput.style.display = '';
+          searchInput.focus();
+        }
+      });
+
       host.appendChild(btn);
     }
-    // вертикальная панель или горизонтальная – подставляем нужный отступ
+
     var vertical = window.getComputedStyle(host).flexDirection === 'column';
-    btn.classList.toggle('pdf-vertical', vertical);
+    btn.classList.toggle('ai-search-vertical', vertical);
   }
 
   ensureButton();
