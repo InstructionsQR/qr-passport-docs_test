@@ -25,8 +25,10 @@
 
     // Клик по полю – открываем модалку умного поиска
     input.addEventListener('focus', function () {
-      openSearch();
-      input.blur(); // убираем фокус с поля, фокус перейдёт в модалку
+      if (typeof openSearch === 'function') {
+        openSearch();
+      }
+      input.blur();
     });
 
     return wrapper;
@@ -36,19 +38,18 @@
     var host = document.querySelector('.dc-controls');
     if (!host) return;
 
-    // Умный поиск в хедере
-    var headerSearch = document.querySelector('.dc-header__search, [class*="header"] [class*="search"]');
-    if (headerSearch && !headerSearch.querySelector('.ai-search-header-wrapper')) {
-      var smartSearch = makeButton();
-      // Заменяем обычное поле поиска на умный поиск
-      var oldInput = headerSearch.querySelector('input');
+    // 1. Умный поиск в хедере (на месте обычного поиска)
+    var searchContainer = document.querySelector('.dc-search-input__input, .Suggest__input');
+    if (searchContainer && !searchContainer.querySelector('.ai-search-header-wrapper')) {
+      var oldInput = searchContainer.querySelector('input.g-text-input__control');
       if (oldInput) {
         oldInput.style.display = 'none'; // скрываем обычное поле
       }
-      headerSearch.appendChild(smartSearch);
+      var smartSearch = makeButton();
+      searchContainer.appendChild(smartSearch);
     }
 
-    // Обычный поиск под лупу в панели управления
+    // 2. Обычный поиск под лупу в панели управления
     var btn = host.querySelector('.ai-search-btn');
     if (!btn) {
       btn = document.createElement('button');
@@ -63,12 +64,17 @@
         '<path d="m21 21-4.3-4.3"></path>' +
         '</svg></span></span>';
 
-      // Клик по лупе – открываем обычный поиск
+      // Клик по лупе – показываем обычное поле поиска
       btn.addEventListener('click', function () {
-        var searchInput = document.querySelector('.dc-header__search input, [class*="header"] [class*="search"] input');
-        if (searchInput) {
-          searchInput.style.display = '';
-          searchInput.focus();
+        var searchContainer = document.querySelector('.dc-search-input__input, .Suggest__input');
+        if (searchContainer) {
+          var oldInput = searchContainer.querySelector('input.g-text-input__control');
+          var smartWrapper = searchContainer.querySelector('.ai-search-header-wrapper');
+          if (oldInput && smartWrapper) {
+            oldInput.style.display = '';
+            smartWrapper.style.display = 'none';
+            oldInput.focus();
+          }
         }
       });
 
