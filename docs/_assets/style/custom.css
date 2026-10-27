@@ -921,3 +921,10 @@ input#dc-1-input {
 .g-root_theme_dark .ai-search-choice-item:hover {
   background: rgba(165, 184, 255, 0.12);
 }
+
+/* Скрываем стандартную лупу в панели управления (справа вверху) */
+.dc-controls .g-button[aria-label*="оиск"],
+.dc-controls .g-button[aria-label*="earch"],
+.dc-controls .ai-search-btn {
+  display: none !important;
+}

@@ -768,8 +768,9 @@ document.addEventListener('click', function (e) {
 
   // === Своя кнопка поиска в хедере ===
   function ai_createSearchButton() {
-    // Если кнопка уже создана – не создаём вторую
     if (document.querySelector('.ai-search-btn-custom')) return;
+
+    console.log('✅ Создаю кнопку поиска...'); // Для отладки
 
     // Создаём кнопку
     var btn = document.createElement('button');
@@ -810,7 +811,7 @@ document.addEventListener('click', function (e) {
         var rect = header.getBoundingClientRect();
         wrapper.style.position = 'fixed';
         wrapper.style.top = '12px';
-        wrapper.style.right = '320px'; // Слева от панели управления
+        wrapper.style.right = '280px'; // Слева от панели управления
         wrapper.style.zIndex = '9999';
       }
     }
