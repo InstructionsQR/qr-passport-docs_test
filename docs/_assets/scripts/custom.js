@@ -510,9 +510,8 @@ document.addEventListener('click', function (e) {
 // ===== Умный локальный поиск по документации =====
 (function () {
   var COUNTER_ID = 111923254;
-  var sentQueries = {}; // чтобы не слать одну цель на каждое нажатие клавиши
+  var sentQueries = {}; 
 
-  // Отправка цели в Метрику + лог в консоль для проверки
   function sendGoal(name, params) {
     var q = params && (params.query || params.empty_query || params.found_query || params.click_query);
     console.log('Метрика: цель ' + name + ' отправлена' +
@@ -607,7 +606,7 @@ document.addEventListener('click', function (e) {
       '</div>';
     document.body.appendChild(overlay);
 
-    var input = overlay.querySelector('input');
+    var input = overlay.querySelector('.ai-search-input');
     var status = overlay.querySelector('.ai-search-status');
     var results = overlay.querySelector('.ai-search-results');
     var timer = null;
@@ -622,7 +621,6 @@ document.addEventListener('click', function (e) {
       if (e.key === 'Escape') overlay.classList.remove('open');
     });
 
-    // --- Цель уходит только после окончания ввода ---
     var pendingGoal = null;
     var goalTimer = null;
 
@@ -647,11 +645,11 @@ document.addEventListener('click', function (e) {
     function queueGoal(q, count) {
       pendingGoal = { q: q, count: count };
       clearTimeout(goalTimer);
-      goalTimer = setTimeout(flushGoal, 2000); // 2 секунды без клавиш – фраза готова
+      goalTimer = setTimeout(flushGoal, 2000);
     }
 
     input.addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') flushGoal(); // Enter – отправить сразу, не ждать 2 секунды
+      if (e.key === 'Enter') flushGoal();
     });
 
     input.addEventListener('input', function () {
@@ -684,7 +682,6 @@ document.addEventListener('click', function (e) {
       }, 300);
     });
 
-    // Метрика: клик по результату (делегирование – ссылки создаются динамически)
     results.addEventListener('click', function (e) {
       var link = e.target.closest ? e.target.closest('.ai-search-item') : null;
       if (!link) return;
@@ -702,75 +699,14 @@ document.addEventListener('click', function (e) {
     ensureOverlay();
     window._aiSearchOverlay.classList.add('open');
     setTimeout(function () {
-      window._aiSearchOverlay.querySelector('input').focus();
+      window._aiSearchOverlay.querySelector('.ai-search-input').focus();
     }, 50);
     sendGoal('smart_search_open');
   }
 
-  // === Кнопка в панели управления ===
-  function makeButton() {
-    var isEn = window.location.pathname.indexOf('/en/') !== -1;
-    var b = document.createElement('button');
-    b.type = 'button';
-    b.className = 'g-button g-button_view_flat-secondary g-button_size_m g-button_pin_round-round dc-control dc-controls__control ai-search-btn';
-    b.setAttribute('data-tooltip', isEn ? 'Smart search' : 'Умный поиск');
-    b.setAttribute('aria-label', isEn ? 'Smart search' : 'Умный поиск');
-    b.innerHTML =
-      '<span class="g-button__icon"><span class="g-button__icon-inner">' +
-      '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">' +
-      '<circle cx="11" cy="11" r="7"></circle>' +
-      '<path d="m21 21-4.3-4.3"></path>' +
-      '</svg></span></span>';
-    b.addEventListener('click', openSearch);
-    return b;
-  }
-
-  function ensureButton() {
-    var host = document.querySelector('.dc-controls');
-    if (!host) return;
-    var btn = host.querySelector('.ai-search-btn');
-    if (!btn) {
-      btn = makeButton();
-      host.appendChild(btn);
-    }
-    var vertical = window.getComputedStyle(host).flexDirection === 'column';
-    btn.classList.toggle('ai-search-vertical', vertical);
-  }
-
-  // Наблюдатель за панелью; переподключается, если панель пересоздаётся
-  var currentPanel = null;
-  var observer = null;
-
-  function attachObserver() {
-    var panel = document.querySelector('.dc-controls');
-    if (panel && panel !== currentPanel) {
-      currentPanel = panel;
-      if (observer) observer.disconnect();
-      observer = new MutationObserver(function () {
-        ensureButton();
-      });
-      observer.observe(panel, { childList: true, subtree: true });
-    }
-    ensureButton();
-  }
-
-  attachObserver();
-  window.addEventListener('resize', ensureButton);
-
-  // Ловим момент появления панели в DOM – вставляем кнопку мгновенно
-  var bootObserver = new MutationObserver(function () {
-    attachObserver();
-  });
-  bootObserver.observe(document.documentElement, { childList: true, subtree: true });
-
-  // Страховка: раз в секунду проверяем, что кнопка на месте
-  setInterval(attachObserver, 1000);
-
-  // === Своя кнопка поиска в хедере ===
+  // === Кастомная кнопка поиска в хедере с меню выбора ===
   function ai_createSearchButton() {
     if (document.querySelector('.ai-search-btn-custom')) return;
-
-    console.log('✅ Создаю кнопку поиска...');
 
     var btn = document.createElement('button');
     btn.className = 'ai-search-btn-custom';
@@ -801,15 +737,13 @@ document.addEventListener('click', function (e) {
 
     document.body.appendChild(wrapper);
 
-    // Позиционирование кнопки
     function positionButton() {
       wrapper.style.position = 'fixed';
       wrapper.style.top = '12px';
-      wrapper.style.right = '240px';
+      wrapper.style.right = '120px';
       wrapper.style.zIndex = '9999';
     }
 
-    // Позиционирование меню
     function positionMenu() {
       var rect = btn.getBoundingClientRect();
       menu.style.position = 'fixed';
@@ -819,15 +753,13 @@ document.addEventListener('click', function (e) {
       menu.style.minWidth = Math.max(rect.width, 180) + 'px';
     }
 
-    // === ДЕЛЕГИРОВАНИЕ: один обработчик на document ===
+    // ДЕЛЕГИРОВАНИЕ: один обработчик на document
     document.addEventListener('click', function (e) {
-      // 1. Клик по кнопке или её потомкам (svg, span)
+      // 1. Клик по кнопке или её потомкам
       if (btn.contains(e.target)) {
-        console.log(' Клик по кнопке поиска (делегирование)');
         e.stopPropagation();
         e.preventDefault();
         var isOpen = menu.classList.toggle('open');
-        console.log('Меню открыто:', isOpen);
         if (isOpen) positionMenu();
         return;
       }
@@ -837,35 +769,44 @@ document.addEventListener('click', function (e) {
       if (item && menu.contains(item)) {
         var type = item.dataset.type;
         menu.classList.remove('open');
-        console.log('Выбран тип:', type);
 
         if (type === 'smart') {
-          if (typeof openSearch === 'function') openSearch();
+          openSearch();
         } else if (type === 'regular') {
-          var oldInput = document.querySelector('input.g-text-input__control, input#dc-1-input, input#dc-2-input');
-          if (oldInput) {
-            oldInput.style.display = '';
-            oldInput.focus();
+          // ИСПРАВЛЕНИЕ: используем класс .show-regular, который перебивает !important в CSS
+          var searchContainer = document.querySelector('.dc-search-suggest__wrapper, .Suggest, [class*="search"]');
+          if (searchContainer) {
+            searchContainer.classList.add('show-regular');
+            var input = searchContainer.querySelector('input');
+            if (input) {
+              setTimeout(function() { input.focus(); }, 100);
+            }
           }
         }
         return;
       }
 
       // 3. Клик вне меню — закрываем
-      if (menu.classList.contains('open')) {
+      if (menu.classList.contains('open') && !wrapper.contains(e.target)) {
         menu.classList.remove('open');
       }
     });
 
     // Закрытие по Escape
     document.addEventListener('keydown', function (e) {
-      if (e.key === 'Escape') menu.classList.remove('open');
+      if (e.key === 'Escape') {
+        menu.classList.remove('open');
+        if (window._aiSearchOverlay) {
+          window._aiSearchOverlay.classList.remove('open');
+        }
+      }
     });
 
     positionButton();
     window.addEventListener('resize', positionButton);
   }
 
+  // Запуск
   if (document.readyState === 'complete') {
     ai_createSearchButton();
   } else {
