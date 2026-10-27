@@ -957,3 +957,27 @@ input#dc-1-input {
   border-radius: 6px;
   font-size: 14px;
 }
+
+/* ===== ИСПРАВЛЕНИЕ: принудительно показываем поле умного поиска ===== */
+/* Этот блок должен быть в самом конце файла, чтобы перебить [class*="search-input"] */
+.ai-search-input {
+  display: block !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  width: 100% !important;
+  margin: 12px 0 !important;
+  padding: 12px 14px !important;
+  border: 1px solid #e6e7eb !important;
+  border-radius: 12px !important;
+  font-size: 15px !important;
+  box-sizing: border-box !important;
+  background: #fff !important;
+  color: #333 !important;
+}
+
+/* Тёмная тема для поля ввода */
+.g-root_theme_dark .ai-search-input {
+  background: #1f2436 !important;
+  border-color: #4a5580 !important;
+  color: #f4f5fd !important;
+}

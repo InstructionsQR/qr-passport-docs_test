@@ -773,13 +773,14 @@ document.addEventListener('click', function (e) {
         if (type === 'smart') {
           openSearch();
         } else if (type === 'regular') {
-          // ИСПРАВЛЕНИЕ: используем класс .show-regular, который перебивает !important в CSS
+          console.log('Показываю обычный поиск...');
           var searchContainer = document.querySelector('.dc-search-suggest__wrapper, .Suggest, [class*="search"]');
           if (searchContainer) {
             searchContainer.classList.add('show-regular');
             var input = searchContainer.querySelector('input');
             if (input) {
               setTimeout(function() { input.focus(); }, 100);
+              console.log('✅ Обычный поиск активирован');
             }
           }
         }
