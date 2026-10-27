@@ -814,6 +814,13 @@ document.addEventListener('click', function (e) {
   }
   setTimeout(ai_createSearchButton, 500);
   setTimeout(ai_createSearchButton, 1500);
+
+  // Делаем функции глобально доступными для отладки
+  window.aiSearch = {
+    openSearch: openSearch,
+    ensureOverlay: ensureOverlay,
+    sendGoal: sendGoal
+  };
 })();
 
 
