@@ -704,6 +704,69 @@ document.addEventListener('click', function (e) {
     sendGoal('smart_search_open');
   }
 
+  // === Модальное окно обычного поиска ===
+  function openRegularSearchModal() {
+    // Если модалка уже создана - просто открываем
+    if (document.querySelector('.regular-search-overlay')) {
+      document.querySelector('.regular-search-overlay').classList.add('open');
+      setTimeout(function() {
+        var input = document.querySelector('.regular-search-input');
+        if (input) input.focus();
+      }, 50);
+      return;
+    }
+
+    // Создаём модальное окно
+    var overlay = document.createElement('div');
+    overlay.className = 'regular-search-overlay';
+    overlay.innerHTML =
+      '<div class="regular-search-modal">' +
+      '  <div class="regular-search-header"><h3>Поиск по документации</h3><button class="regular-search-close" type="button">✕</button></div>' +
+      '  <div class="regular-search-hint">Введите запрос для поиска по документации</div>' +
+      '  <form class="regular-search-form">' +
+      '    <input type="text" class="regular-search-input" placeholder="Введите поисковый запрос...">' +
+      '    <button type="submit" class="regular-search-submit">Найти</button>' +
+      '  </form>' +
+      '  <div class="regular-search-results"></div>' +
+      '</div>';
+    document.body.appendChild(overlay);
+
+    // Обработчики
+    overlay.querySelector('.regular-search-close').addEventListener('click', function() {
+      overlay.classList.remove('open');
+    });
+    overlay.addEventListener('click', function(e) {
+      if (e.target === overlay) overlay.classList.remove('open');
+    });
+
+    // Отправка формы
+    var form = overlay.querySelector('.regular-search-form');
+    var input = overlay.querySelector('.regular-search-input');
+    var results = overlay.querySelector('.regular-search-results');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      var query = input.value.trim();
+      if (!query) return;
+
+      console.log('Поиск:', query);
+      results.innerHTML = '<div class="regular-search-loading">Поиск...</div>';
+
+      // Используем стандартный поиск Diplodoc
+      // Перенаправляем на страницу поиска
+      var searchUrl = '/ru/search.html?q=' + encodeURIComponent(query);
+      
+      // Пробуем открыть в той же вкладке
+      window.location.href = searchUrl;
+    });
+
+    // Открываем модалку
+    overlay.classList.add('open');
+    setTimeout(function() {
+      input.focus();
+    }, 50);
+  }
+
   // === Кастомная кнопка поиска в хедере с меню выбора ===
   function ai_createSearchButton() {
     if (document.querySelector('.ai-search-btn-custom')) return;
@@ -773,41 +836,8 @@ document.addEventListener('click', function (e) {
         if (type === 'smart') {
           openSearch();
         } else if (type === 'regular') {
-          console.log('Открываю обычный поиск...');
-          
-          // Находим контейнер стандартного поиска
-          var searchContainer = document.querySelector('.dc-search-suggest__wrapper, .Suggest, [class*="search-input"]');
-          
-          if (searchContainer) {
-            // Показываем контейнер
-            searchContainer.style.display = 'block';
-            searchContainer.style.visibility = 'visible';
-            searchContainer.style.opacity = '1';
-            
-            // Находим input и фокусируемся
-            var searchInput = searchContainer.querySelector('input');
-            if (searchInput) {
-              searchInput.style.display = 'block';
-              searchInput.style.visibility = 'visible';
-              searchInput.style.opacity = '1';
-              searchInput.focus();
-              searchInput.click();
-              console.log('✅ Обычный поиск показан');
-            }
-          } else {
-            // Если контейнер не найден - ищем любой input с placeholder "Поиск"
-            var allInputs = document.querySelectorAll('input');
-            for (var i = 0; i < allInputs.length; i++) {
-              var placeholder = allInputs[i].getAttribute('placeholder');
-              if (placeholder && placeholder.toLowerCase().indexOf('поиск') !== -1) {
-                allInputs[i].style.display = 'block';
-                allInputs[i].focus();
-                allInputs[i].click();
-                console.log('✅ Найден input по placeholder');
-                break;
-              }
-            }
-          }
+          console.log('Открываю обычный поиск в модальном окне...');
+          openRegularSearchModal();
         }
         return;
       }

@@ -981,3 +981,133 @@ input#dc-1-input {
   border-color: #4a5580 !important;
   color: #f4f5fd !important;
 }
+
+/* ===== Модальное окно обычного поиска ===== */
+.regular-search-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: none;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 10vh;
+  z-index: 10000;
+}
+
+.regular-search-overlay.open {
+  display: flex;
+}
+
+.regular-search-modal {
+  background: #fff;
+  border-radius: 16px;
+  width: 640px;
+  max-width: 92vw;
+  max-height: 70vh;
+  overflow-y: auto;
+  padding: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+}
+
+.regular-search-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.regular-search-header h3 {
+  margin: 0;
+  font-size: 18px;
+  color: #333;
+}
+
+.regular-search-close {
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: #666;
+}
+
+.regular-search-hint {
+  color: #6b7280;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+.regular-search-form {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.regular-search-input {
+  flex: 1;
+  padding: 12px 14px;
+  border: 1px solid #e6e7eb;
+  border-radius: 12px;
+  font-size: 15px;
+  box-sizing: border-box;
+}
+
+.regular-search-input:focus {
+  outline: none;
+  border-color: #5460d4;
+}
+
+.regular-search-submit {
+  padding: 12px 24px;
+  background: #5460d4;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.regular-search-submit:hover {
+  background: #4a54c0;
+}
+
+.regular-search-results {
+  min-height: 100px;
+}
+
+.regular-search-loading {
+  text-align: center;
+  color: #6b7280;
+  padding: 20px;
+}
+
+/* Тёмная тема */
+.g-root_theme_dark .regular-search-modal {
+  background: #2b3145;
+}
+
+.g-root_theme_dark .regular-search-header h3 {
+  color: #f4f5fd;
+}
+
+.g-root_theme_dark .regular-search-close {
+  color: #cbd2e8;
+}
+
+.g-root_theme_dark .regular-search-hint {
+  color: #9aa5c4;
+}
+
+.g-root_theme_dark .regular-search-input {
+  background: #1f2436;
+  border-color: #4a5580;
+  color: #f4f5fd;
+}
+
+.g-root_theme_dark .regular-search-submit {
+  background: #5460d4;
+}
+
+.g-root_theme_dark .regular-search-submit:hover {
+  background: #4a54c0;
+}
