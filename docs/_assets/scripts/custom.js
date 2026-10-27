@@ -770,9 +770,8 @@ document.addEventListener('click', function (e) {
   function ai_createSearchButton() {
     if (document.querySelector('.ai-search-btn-custom')) return;
 
-    console.log('✅ Создаю кнопку поиска...'); // Для отладки
+    console.log('✅ Создаю кнопку поиска...');
 
-    // Создаём кнопку
     var btn = document.createElement('button');
     btn.className = 'ai-search-btn-custom';
     btn.type = 'button';
@@ -783,7 +782,6 @@ document.addEventListener('click', function (e) {
       '</svg>' +
       '<span class="ai-search-btn-text">Поиск</span>';
 
-    // Создаём меню
     var menu = document.createElement('div');
     menu.className = 'ai-search-choice-menu';
     menu.innerHTML =
@@ -801,60 +799,60 @@ document.addEventListener('click', function (e) {
     wrapper.appendChild(btn);
     wrapper.appendChild(menu);
 
-    // === Вставляем в body с фиксированной позицией ===
     document.body.appendChild(wrapper);
 
     // Позиционирование кнопки
     function positionButton() {
-      var header = document.querySelector('.dc-header, header, [class*="header"]');
-      if (header) {
-        var rect = header.getBoundingClientRect();
-        wrapper.style.position = 'fixed';
-        wrapper.style.top = '12px';
-        wrapper.style.right = '280px'; // Слева от панели управления
-        wrapper.style.zIndex = '9999';
-      }
+      wrapper.style.position = 'fixed';
+      wrapper.style.top = '12px';
+      wrapper.style.right = '240px';
+      wrapper.style.zIndex = '9999';
     }
 
     // Позиционирование меню
     function positionMenu() {
       var rect = btn.getBoundingClientRect();
-      menu.style.top = (rect.bottom + window.scrollY + 8) + 'px';
-      menu.style.left = (rect.left + window.scrollX) + 'px';
+      menu.style.position = 'fixed';
+      menu.style.top = (rect.bottom + 8) + 'px';
+      menu.style.left = rect.left + 'px';
+      menu.style.right = 'auto';
       menu.style.minWidth = Math.max(rect.width, 180) + 'px';
     }
 
-    // Клик по кнопке
-    btn.addEventListener('click', function (e) {
-      e.stopPropagation();
-      menu.classList.toggle('open');
-      if (menu.classList.contains('open')) {
-        positionMenu();
-      }
-    });
-
-    // Выбор пункта
-    menu.addEventListener('click', function (e) {
-      var item = e.target.closest('.ai-search-choice-item');
-      if (!item) return;
-      
-      var type = item.dataset.type;
-      menu.classList.remove('open');
-
-      if (type === 'smart') {
-        if (typeof openSearch === 'function') openSearch();
-      } else if (type === 'regular') {
-        var oldInput = document.querySelector('input.g-text-input__control, input#dc-1-input, input#dc-2-input');
-        if (oldInput) {
-          oldInput.style.display = '';
-          oldInput.focus();
-        }
-      }
-    });
-
-    // Закрытие по клику вне
+    // === ДЕЛЕГИРОВАНИЕ: один обработчик на document ===
     document.addEventListener('click', function (e) {
-      if (!wrapper.contains(e.target)) {
+      // 1. Клик по кнопке или её потомкам (svg, span)
+      if (btn.contains(e.target)) {
+        console.log(' Клик по кнопке поиска (делегирование)');
+        e.stopPropagation();
+        e.preventDefault();
+        var isOpen = menu.classList.toggle('open');
+        console.log('Меню открыто:', isOpen);
+        if (isOpen) positionMenu();
+        return;
+      }
+
+      // 2. Клик по пункту меню
+      var item = e.target.closest('.ai-search-choice-item');
+      if (item && menu.contains(item)) {
+        var type = item.dataset.type;
+        menu.classList.remove('open');
+        console.log('Выбран тип:', type);
+
+        if (type === 'smart') {
+          if (typeof openSearch === 'function') openSearch();
+        } else if (type === 'regular') {
+          var oldInput = document.querySelector('input.g-text-input__control, input#dc-1-input, input#dc-2-input');
+          if (oldInput) {
+            oldInput.style.display = '';
+            oldInput.focus();
+          }
+        }
+        return;
+      }
+
+      // 3. Клик вне меню — закрываем
+      if (menu.classList.contains('open')) {
         menu.classList.remove('open');
       }
     });
@@ -864,12 +862,10 @@ document.addEventListener('click', function (e) {
       if (e.key === 'Escape') menu.classList.remove('open');
     });
 
-    // Позиционируем кнопку при загрузке и изменении размера
     positionButton();
     window.addEventListener('resize', positionButton);
   }
 
-  // Запуск
   if (document.readyState === 'complete') {
     ai_createSearchButton();
   } else {
@@ -877,7 +873,6 @@ document.addEventListener('click', function (e) {
   }
   setTimeout(ai_createSearchButton, 500);
   setTimeout(ai_createSearchButton, 1500);
-
 })();
 
 
