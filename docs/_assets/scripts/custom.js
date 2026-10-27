@@ -773,14 +773,22 @@ document.addEventListener('click', function (e) {
         if (type === 'smart') {
           openSearch();
         } else if (type === 'regular') {
-          console.log('Показываю обычный поиск...');
-          var searchContainer = document.querySelector('.dc-search-suggest__wrapper, .Suggest, [class*="search"]');
-          if (searchContainer) {
-            searchContainer.classList.add('show-regular');
-            var input = searchContainer.querySelector('input');
-            if (input) {
-              setTimeout(function() { input.focus(); }, 100);
-              console.log('✅ Обычный поиск активирован');
+          console.log('Открываю обычный поиск...');
+          
+          // Ищем стандартную кнопку поиска Diplodoc в хедере
+          var standardSearchBtn = document.querySelector('[class*="search"] button, .dc-header__search button, header button[aria-label*="оиск"], header button[aria-label*="earch"]');
+          
+          if (standardSearchBtn) {
+            // Кликаем по ней - откроется стандартное модальное окно поиска
+            standardSearchBtn.click();
+            standardSearchBtn.focus();
+            console.log('✅ Стандартный поиск активирован');
+          } else {
+            // Fallback: если кнопка не найдена, показываем поле напрямую
+            var searchInput = document.querySelector('input.g-text-input__control, input#dc-1-input, input#dc-2-input');
+            if (searchInput) {
+              searchInput.style.display = '';
+              searchInput.focus();
             }
           }
         }
