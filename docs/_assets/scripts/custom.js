@@ -775,20 +775,37 @@ document.addEventListener('click', function (e) {
         } else if (type === 'regular') {
           console.log('Открываю обычный поиск...');
           
-          // Ищем стандартную кнопку поиска Diplodoc в хедере
-          var standardSearchBtn = document.querySelector('[class*="search"] button, .dc-header__search button, header button[aria-label*="оиск"], header button[aria-label*="earch"]');
+          // Находим контейнер стандартного поиска
+          var searchContainer = document.querySelector('.dc-search-suggest__wrapper, .Suggest, [class*="search-input"]');
           
-          if (standardSearchBtn) {
-            // Кликаем по ней - откроется стандартное модальное окно поиска
-            standardSearchBtn.click();
-            standardSearchBtn.focus();
-            console.log('✅ Стандартный поиск активирован');
-          } else {
-            // Fallback: если кнопка не найдена, показываем поле напрямую
-            var searchInput = document.querySelector('input.g-text-input__control, input#dc-1-input, input#dc-2-input');
+          if (searchContainer) {
+            // Показываем контейнер
+            searchContainer.style.display = 'block';
+            searchContainer.style.visibility = 'visible';
+            searchContainer.style.opacity = '1';
+            
+            // Находим input и фокусируемся
+            var searchInput = searchContainer.querySelector('input');
             if (searchInput) {
-              searchInput.style.display = '';
+              searchInput.style.display = 'block';
+              searchInput.style.visibility = 'visible';
+              searchInput.style.opacity = '1';
               searchInput.focus();
+              searchInput.click();
+              console.log('✅ Обычный поиск показан');
+            }
+          } else {
+            // Если контейнер не найден - ищем любой input с placeholder "Поиск"
+            var allInputs = document.querySelectorAll('input');
+            for (var i = 0; i < allInputs.length; i++) {
+              var placeholder = allInputs[i].getAttribute('placeholder');
+              if (placeholder && placeholder.toLowerCase().indexOf('поиск') !== -1) {
+                allInputs[i].style.display = 'block';
+                allInputs[i].focus();
+                allInputs[i].click();
+                console.log('✅ Найден input по placeholder');
+                break;
+              }
             }
           }
         }
