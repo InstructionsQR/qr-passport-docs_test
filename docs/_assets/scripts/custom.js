@@ -791,7 +791,7 @@ document.addEventListener('click', function (e) {
       '  <span>Умный поиск</span>' +
       '</div>' +
       '<div class="ai-search-choice-item" data-type="regular">' +
-      '  <span class="ai-search-choice-icon"></span>' +
+      '  <span class="ai-search-choice-icon">🔍</span>' +
       '  <span>Обычный поиск</span>' +
       '</div>';
 
@@ -800,25 +800,18 @@ document.addEventListener('click', function (e) {
     wrapper.appendChild(btn);
     wrapper.appendChild(menu);
 
-    // === Вставляем в ВЕРХНИЙ ХЕДЕР (горизонтальная полоса сверху) ===
-    // Ищем верхний хедер по специфичным признакам
-    var topHeader = document.querySelector('.Layout__header') || 
-                    document.querySelector('[class*="Layout__header"]') ||
-                    document.querySelector('header.Layout__header') ||
-                    document.querySelector('.dc-header');
-    
-    if (topHeader) {
-      // Вставляем в конец хедера (справа)
-      topHeader.appendChild(wrapper);
-    } else {
-      // Fallback: ищем любой header с классом Layout
-      var headers = document.querySelectorAll('header');
-      for (var i = 0; i < headers.length; i++) {
-        if (headers[i].className.indexOf('Layout') !== -1 || 
-            headers[i].className.indexOf('header') !== -1) {
-          headers[i].appendChild(wrapper);
-          break;
-        }
+    // === Вставляем в body с фиксированной позицией ===
+    document.body.appendChild(wrapper);
+
+    // Позиционирование кнопки
+    function positionButton() {
+      var header = document.querySelector('.dc-header, header, [class*="header"]');
+      if (header) {
+        var rect = header.getBoundingClientRect();
+        wrapper.style.position = 'fixed';
+        wrapper.style.top = '12px';
+        wrapper.style.right = '320px'; // Слева от панели управления
+        wrapper.style.zIndex = '9999';
       }
     }
 
@@ -869,6 +862,10 @@ document.addEventListener('click', function (e) {
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') menu.classList.remove('open');
     });
+
+    // Позиционируем кнопку при загрузке и изменении размера
+    positionButton();
+    window.addEventListener('resize', positionButton);
   }
 
   // Запуск
@@ -880,23 +877,6 @@ document.addEventListener('click', function (e) {
   setTimeout(ai_createSearchButton, 500);
   setTimeout(ai_createSearchButton, 1500);
 
-  // Запуск
-  if (document.readyState === 'complete') {
-    ai_createSearchButton();
-  } else {
-    window.addEventListener('load', ai_createSearchButton);
-  }
-  // Повторяем несколько раз для гарантии
-  setTimeout(ai_createSearchButton, 500);
-  setTimeout(ai_createSearchButton, 1500);
-
-  // Запускаем
-  if (document.readyState === 'complete') {
-    ai_createSearchButton();
-  } else {
-    window.addEventListener('load', ai_createSearchButton);
-  }
-  setTimeout(ai_createSearchButton, 1000);  
 })();
 
 
