@@ -1030,3 +1030,121 @@ input#dc-1-input {
 .g-root_theme_dark .ai-search-choice-item:hover {
   background: rgba(165, 184, 255, 0.12);
 }
+
+/* ===== Кнопка поиска в ВЕРХНЕМ ХЕДЕРЕ ===== */
+.ai-search-wrapper-custom {
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  z-index: 1000 !important;
+  margin-left: auto !important; /* прижимает кнопку вправо */
+  margin-right: 20px !important;
+}
+
+.ai-search-btn-custom {
+  display: inline-flex !important;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid #e6e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  font-size: 14px;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  visibility: visible !important;
+  opacity: 1 !important;
+  white-space: nowrap;
+}
+
+.ai-search-btn-custom:hover {
+  border-color: #5460d4;
+  background: rgba(84, 96, 212, 0.04);
+  box-shadow: 0 2px 8px rgba(84, 96, 212, 0.15);
+}
+
+/* На мобильных – только иконка */
+@media (max-width: 768px) {
+  .ai-search-btn-text {
+    display: none;
+  }
+  
+  .ai-search-btn-custom {
+    padding: 8px;
+  }
+  
+  .ai-search-wrapper-custom {
+    margin-right: 10px !important;
+  }
+}
+
+/* Меню */
+.ai-search-choice-menu {
+  position: absolute;
+  top: 100%;
+  right: 0;
+  left: auto;
+  margin-top: 8px;
+  background: #fff;
+  border: 1px solid #e6e7eb;
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  padding: 8px;
+  z-index: 10001;
+  display: none;
+  min-width: 200px;
+  font-family: inherit;
+}
+
+.ai-search-choice-menu.open {
+  display: block;
+}
+
+.ai-search-choice-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #374151;
+  transition: background 0.15s;
+}
+
+.ai-search-choice-item:hover {
+  background: rgba(84, 96, 212, 0.08);
+}
+
+.ai-search-choice-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+}
+
+/* Тёмная тема */
+.g-root_theme_dark .ai-search-btn-custom {
+  background: #2b3145;
+  border-color: #4a5580;
+  color: #f4f5fd;
+}
+
+.g-root_theme_dark .ai-search-btn-custom:hover {
+  background: rgba(165, 184, 255, 0.08);
+}
+
+.g-root_theme_dark .ai-search-choice-menu {
+  background: #2b3145;
+  border-color: #4a5580;
+}
+
+.g-root_theme_dark .ai-search-choice-item {
+  color: #f4f5fd;
+}
+
+.g-root_theme_dark .ai-search-choice-item:hover {
+  background: rgba(165, 184, 255, 0.12);
+}

@@ -791,7 +791,7 @@ document.addEventListener('click', function (e) {
       '  <span>Умный поиск</span>' +
       '</div>' +
       '<div class="ai-search-choice-item" data-type="regular">' +
-      '  <span class="ai-search-choice-icon">🔍</span>' +
+      '  <span class="ai-search-choice-icon"></span>' +
       '  <span>Обычный поиск</span>' +
       '</div>';
 
@@ -800,16 +800,25 @@ document.addEventListener('click', function (e) {
     wrapper.appendChild(btn);
     wrapper.appendChild(menu);
 
-    // === Вставляем в ХЕДЕР на видное место ===
-    // Вариант 1: справа от логотипа
-    var logo = document.querySelector('.dc-header__logo, .dc-logo, header a:first-child');
-    if (logo && logo.parentElement) {
-      logo.parentElement.appendChild(wrapper);
+    // === Вставляем в ВЕРХНИЙ ХЕДЕР (горизонтальная полоса сверху) ===
+    // Ищем верхний хедер по специфичным признакам
+    var topHeader = document.querySelector('.Layout__header') || 
+                    document.querySelector('[class*="Layout__header"]') ||
+                    document.querySelector('header.Layout__header') ||
+                    document.querySelector('.dc-header');
+    
+    if (topHeader) {
+      // Вставляем в конец хедера (справа)
+      topHeader.appendChild(wrapper);
     } else {
-      // Вариант 2: в начало хедера
-      var header = document.querySelector('.dc-header, header, [class*="header"]');
-      if (header) {
-        header.insertBefore(wrapper, header.firstChild);
+      // Fallback: ищем любой header с классом Layout
+      var headers = document.querySelectorAll('header');
+      for (var i = 0; i < headers.length; i++) {
+        if (headers[i].className.indexOf('Layout') !== -1 || 
+            headers[i].className.indexOf('header') !== -1) {
+          headers[i].appendChild(wrapper);
+          break;
+        }
       }
     }
 
@@ -841,7 +850,6 @@ document.addEventListener('click', function (e) {
       if (type === 'smart') {
         if (typeof openSearch === 'function') openSearch();
       } else if (type === 'regular') {
-        // Показываем старое поле поиска (если нужно)
         var oldInput = document.querySelector('input.g-text-input__control, input#dc-1-input, input#dc-2-input');
         if (oldInput) {
           oldInput.style.display = '';
@@ -862,6 +870,15 @@ document.addEventListener('click', function (e) {
       if (e.key === 'Escape') menu.classList.remove('open');
     });
   }
+
+  // Запуск
+  if (document.readyState === 'complete') {
+    ai_createSearchButton();
+  } else {
+    window.addEventListener('load', ai_createSearchButton);
+  }
+  setTimeout(ai_createSearchButton, 500);
+  setTimeout(ai_createSearchButton, 1500);
 
   // Запуск
   if (document.readyState === 'complete') {
