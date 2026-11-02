@@ -1,11 +1,19 @@
-/* ===== Кнопка «Войти» ===== */
-a[href="https://app.qrpassport.tech/login"] {
+/* ===== Кнопка «Войти» на титульном листе (только в контенте) ===== */
+.dc-doc-page__main a[href="https://app.qrpassport.tech/login"],
+.pc-basic-card a[href="https://app.qrpassport.tech/login"],
+[class*="card"] a[href="https://app.qrpassport.tech/login"] {
   background-color: #5e6ad2 !important;
   border-color: #5e6ad2 !important;
   color: #ffffff !important;
   border-radius: 10px !important;
+  display: inline-block !important;
+  padding: 10px 24px !important;
+  text-decoration: none !important;
 }
-a[href="https://app.qrpassport.tech/login"]:hover {
+
+.dc-doc-page__main a[href="https://app.qrpassport.tech/login"]:hover,
+.pc-basic-card a[href="https://app.qrpassport.tech/login"]:hover,
+[class*="card"] a[href="https://app.qrpassport.tech/login"]:hover {
   background-color: #4a54c0 !important;
   border-color: #4a54c0 !important;
 }
@@ -1140,31 +1148,3 @@ input#dc-1-input {
   color: #f4f5fd !important;
 }
 
-/* ===== Ссылка "Войти в QR-Passport" в хедере (текстовый стиль) ===== */
-.dc-header__nav a[href="https://app.qrpassport.tech/login"],
-header a[href*="app.qrpassport.tech/login"] {
-  display: inline-flex !important;
-  align-items: center !important;
-  padding: 0 !important;
-  background: transparent !important;
-  color: #374151 !important; /* Тёмно-серый цвет текста */
-  border: none !important;
-  border-radius: 0 !important;
-  font-size: 14px !important;
-  font-weight: 400 !important;
-  text-decoration: none !important;
-  white-space: nowrap !important;
-  transition: color 0.15s !important;
-}
-
-.dc-header__nav a[href="https://app.qrpassport.tech/login"]:hover,
-header a[href*="app.qrpassport.tech/login"]:hover {
-  color: #5e6ad2 !important; /* При наведении становится синим */
-  text-decoration: none !important;
-}
-
-/* Посещённая ссылка остаётся того же цвета */
-.dc-header__nav a[href="https://app.qrpassport.tech/login"]:visited,
-header a[href*="app.qrpassport.tech/login"]:visited {
-  color: #374151 !important;
-}
