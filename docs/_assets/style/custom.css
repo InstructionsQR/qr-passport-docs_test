@@ -1139,3 +1139,32 @@ input#dc-1-input {
   border-color: #4a5580 !important;
   color: #f4f5fd !important;
 }
+
+/* ===== Ссылка "Войти в QR-Passport" в хедере (текстовый стиль) ===== */
+.dc-header__nav a[href="https://app.qrpassport.tech/login"],
+header a[href*="app.qrpassport.tech/login"] {
+  display: inline-flex !important;
+  align-items: center !important;
+  padding: 0 !important;
+  background: transparent !important;
+  color: #374151 !important; /* Тёмно-серый цвет текста */
+  border: none !important;
+  border-radius: 0 !important;
+  font-size: 14px !important;
+  font-weight: 400 !important;
+  text-decoration: none !important;
+  white-space: nowrap !important;
+  transition: color 0.15s !important;
+}
+
+.dc-header__nav a[href="https://app.qrpassport.tech/login"]:hover,
+header a[href*="app.qrpassport.tech/login"]:hover {
+  color: #5e6ad2 !important; /* При наведении становится синим */
+  text-decoration: none !important;
+}
+
+/* Посещённая ссылка остаётся того же цвета */
+.dc-header__nav a[href="https://app.qrpassport.tech/login"]:visited,
+header a[href*="app.qrpassport.tech/login"]:visited {
+  color: #374151 !important;
+}
