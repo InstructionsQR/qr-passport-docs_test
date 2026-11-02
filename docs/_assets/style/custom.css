@@ -1148,6 +1148,9 @@ input#dc-1-input {
   color: #f4f5fd !important;
 }
 
+
+
+
 /* ===== Выравнивание кнопок на титульном листе ===== */
 .pc-header-block__actions,
 [class*="header"] [class*="actions"],
@@ -1174,4 +1177,20 @@ input#dc-1-input {
   display: inline-flex !important;
   align-items: center !important;
   justify-content: center !important;
+}
+
+/* ===== Сдвигаем пункты меню хедера правее ===== */
+.dc-header__nav,
+header nav,
+[class*="header"] nav {
+  margin-left: 40px !important; /* Увеличьте это значение, если нужно ещё правее */
+}
+
+/* Для мобильных устройств отступ можно сделать меньше */
+@media (max-width: 768px) {
+  .dc-header__nav,
+  header nav,
+  [class*="header"] nav {
+    margin-left: 20px !important;
+  }
 }
